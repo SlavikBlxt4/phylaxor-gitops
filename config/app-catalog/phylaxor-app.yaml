@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: phylaxor-app
+  namespace: argocd
+spec:
+  project: phylaxor
+  source:
+    repoURL: 'https://github.com/SlavikBlxt4/phylaxor-gitops.git'
+    targetRevision: main
+    path: apps/phylaxor
+    helm:
+      valueFiles:
+        - "values.yaml"
+  destination:
+    namespace: "phylaxor"
+    server: "https://kubernetes.default.svc"
+---
+{{- end }}
+{{- end }}

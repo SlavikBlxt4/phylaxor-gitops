@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: phylaxor
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  description: >-
+    For development/staging scenarios. Applications will have a *NOSYNC*
+    exclude
+  destinations:
+    - name: in-cluster
+      server: 'https://kubernetes.default.svc'
+      namespace: '*'
+  sourceRepos:
+    - 'https://github.com/SlavikBlxt4/phylaxor-gitops.git'
