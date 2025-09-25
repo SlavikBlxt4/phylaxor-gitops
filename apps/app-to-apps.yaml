@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/SlavikBlxt4/phylaxor-gitops.git
-    path: ./apps
+    path: /apps
     targetRevision: main
     directory:
       recurse: true
