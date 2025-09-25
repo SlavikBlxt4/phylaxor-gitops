@@ -1,0 +1,30 @@
+namespace: phylaxor
+
+image:
+  repository: nginx
+  tag: "1.25-alpine"
+  pullPolicy: IfNotPresent
+
+replicas: 1
+
+service:
+  port: 80
+
+expose:
+  type: ingress            # none | ingress
+  host: phylaxor.localtest.me
+  ingressClassName: nginx  # minikube addon ingress usa 'nginx'
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  seccompProfile: { type: RuntimeDefault }
+  capabilities: { drop: ["ALL"] }
