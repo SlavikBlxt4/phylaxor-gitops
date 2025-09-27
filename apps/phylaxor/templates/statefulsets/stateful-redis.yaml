@@ -27,4 +27,3 @@ spec:
       resources: { requests: { storage: {{ .Values.redis.storage.size }} } }
       storageClassName: {{ .Values.redis.storage.storageClassName | quote }}
   {{- end }}
-{{- end }}
