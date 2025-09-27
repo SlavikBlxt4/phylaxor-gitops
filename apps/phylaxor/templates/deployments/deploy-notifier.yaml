@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifier
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicas.notifier }}
+  selector: { matchLabels: { app: notifier } }
+  template:
+    metadata: { labels: { app: notifier } }
+    spec:
+      serviceAccountName: phylaxor-sa
+      containers:
+      - name: notifier
+        image: "{{ .Values.images.notifier.repository }}:{{ .Values.images.notifier.tag }}"
+        imagePullPolicy: {{ .Values.images.notifier.pullPolicy }}
+        ports: [{ containerPort: 8082 }]
+        env:
+        - name: TELEGRAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.telegram.existingSecret }}
+              key: {{ .Values.telegram.tokenKey }}
+        - name: TELEGRAM_CHAT_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.telegram.existingSecret }}
+              key: {{ .Values.telegram.chatIdKey }}
+        securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
+        resources: {{- toYaml .Values.resources.notifier | nindent 10 }}

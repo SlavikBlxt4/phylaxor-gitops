@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: phylaxor-rb
+  namespace: {{ .Values.namespace }}
+subjects:
+- kind: ServiceAccount
+  name: phylaxor-sa
+roleRef:
+  kind: Role
+  name: phylaxor-role
+  apiGroup: rbac.authorization.k8s.io

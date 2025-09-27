@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enricher-context
+  namespace: {{ .Values.namespace }}
+data:
+  context.json: |
+    {{- toJson .Values.env.enricherContext | nindent 4 }}

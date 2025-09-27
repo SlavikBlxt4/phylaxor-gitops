@@ -1,0 +1,23 @@
+{{- if and (eq .Values.expose.type "ingress") .Values.expose.host }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingest
+  namespace: {{ .Values.namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  {{- if .Values.expose.ingressClassName }}
+  ingressClassName: {{ .Values.expose.ingressClassName }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.expose.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ingest
+            port: { number: 8080 }
+{{- end }}

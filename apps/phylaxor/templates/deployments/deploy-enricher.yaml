@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enricher
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicas.enricher }}
+  selector: { matchLabels: { app: enricher } }
+  template:
+    metadata: { labels: { app: enricher } }
+    spec:
+      serviceAccountName: phylaxor-sa
+      volumes:
+      - name: ctx
+        configMap: { name: enricher-context }
+      containers:
+      - name: enricher
+        image: "{{ .Values.images.enricher.repository }}:{{ .Values.images.enricher.tag }}"
+        imagePullPolicy: {{ .Values.images.enricher.pullPolicy }}
+        volumeMounts: [{ name: ctx, mountPath: /data }]
+        env:
+        - name: REDIS_HOST
+          value: "redis.{{ .Values.namespace }}.svc.cluster.local"
+        securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
+        resources: {{- toYaml .Values.resources.enricher | nindent 10 }}

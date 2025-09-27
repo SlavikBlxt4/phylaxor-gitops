@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingest
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicas.ingest }}
+  selector: { matchLabels: { app: ingest } }
+  template:
+    metadata: { labels: { app: ingest } }
+    spec:
+      serviceAccountName: phylaxor-sa
+      containers:
+      - name: ingest
+        image: "{{ .Values.images.ingest.repository }}:{{ .Values.images.ingest.tag }}"
+        imagePullPolicy: {{ .Values.images.ingest.pullPolicy }}
+        ports: [{ containerPort: 8080 }]
+        env:
+        - name: REDIS_HOST
+          value: "redis.{{ .Values.namespace }}.svc.cluster.local"
+        securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
+        resources: {{- toYaml .Values.resources.ingest | nindent 10 }}
