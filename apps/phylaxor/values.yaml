@@ -7,7 +7,7 @@ images:
     pullPolicy: IfNotPresent
   enricher:
     repository: ghcr.io/slavikblxt4/phylaxor-enricher
-    tag: "0.1.0"
+    tag: "0.1.1"
     pullPolicy: IfNotPresent
   decision:
     repository: ghcr.io/slavikblxt4/phylaxor-decision
@@ -37,7 +37,11 @@ resources:
 
 securityContext:
   runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
   allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
   seccompProfile: { type: RuntimeDefault }
   capabilities: { drop: ["ALL"] }
 
