@@ -20,5 +20,5 @@ data:
     receivers:
     - name: phylaxor
       webhook_configs:
-      - url: "http://{{ .Values.ingress.service | default "phylaxor-ingest" }}.{{ .Values.namespace }}.svc.cluster.local:8080/alert"
+      - url: "http://{{ .Values.ingress.service | default "ingest" }}.{{ .Values.namespace }}.svc.cluster.local:8080/alert"
         send_resolved: true

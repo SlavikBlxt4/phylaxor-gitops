@@ -19,7 +19,7 @@ images:
     pullPolicy: IfNotPresent
 
 ingress:
-  service: phylaxor-ingest
+  service: ingest
 
 imagePullSecrets:
   - ghcr-creds
