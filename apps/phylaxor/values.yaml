@@ -3,7 +3,7 @@ namespace: phylaxor
 images:
   ingest:
     repository: ghcr.io/slavikblxt4/phylaxor-ingest
-    tag: "0.1.0"
+    tag: "0.1.1"
     pullPolicy: IfNotPresent
   enricher:
     repository: ghcr.io/slavikblxt4/phylaxor-enricher
