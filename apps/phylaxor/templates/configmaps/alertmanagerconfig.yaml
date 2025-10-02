@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: phylaxor-webhook
+  namespace: monitoring
+spec:
+  route:
+    receiver: phylaxor
+    groupWait: 10s
+    groupInterval: 30s
+    repeatInterval: 1h
+  receivers:
+  - name: phylaxor
+    webhookConfigs:
+    - url: "http://{{ .Values.ingress.service | default "ingest" }}.{{ .Values.namespace }}.svc.cluster.local:8080/alert"
+      sendResolved: true
