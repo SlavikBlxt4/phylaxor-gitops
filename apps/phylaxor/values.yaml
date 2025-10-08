@@ -41,10 +41,12 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 10001
   runAsGroup: 10001
+  fsGroup: 10001
+  readOnlyRootFilesystem: false
   allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
-  seccompProfile: { type: RuntimeDefault }
-  capabilities: { drop: ["ALL"] }
+  seccompProfile:
+    type: RuntimeDefault
+
 
 redis:
   enabled: true
