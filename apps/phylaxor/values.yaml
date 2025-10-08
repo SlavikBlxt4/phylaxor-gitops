@@ -37,15 +37,21 @@ resources:
   decision: { requests: { cpu: 150m, memory: 256Mi }, limits: { cpu: 500m, memory: 512Mi } }
   notifier: { requests: { cpu: 50m, memory: 64Mi }, limits: { cpu: 200m, memory: 128Mi } }
 
+# CAMBIAR A SIGUIENTE CONFIGURACION CUANDO PASEMOS A PRODUCCION
+# securityContext:
+#   runAsNonRoot: true
+#   runAsUser: 10001
+#   runAsGroup: 10001
+#   fsGroup: 10001
+#   readOnlyRootFilesystem: false
+#   allowPrivilegeEscalation: false
+#   seccompProfile:
+#     type: RuntimeDefault
+
 securityContext:
-  runAsNonRoot: true
-  runAsUser: 10001
-  runAsGroup: 10001
-  fsGroup: 10001
+  runAsNonRoot: false
+  allowPrivilegeEscalation: true
   readOnlyRootFilesystem: false
-  allowPrivilegeEscalation: false
-  seccompProfile:
-    type: RuntimeDefault
 
 
 redis:
