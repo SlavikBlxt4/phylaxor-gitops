@@ -70,8 +70,8 @@ postgres:
   enabled: true            # si quieres Postgres in-cluster para DEV
   image: postgres:16
   storage:
-    size: 5Gi
-    storageClassName: standard
+    size: 10Gi
+    storageClassName: minikube-hostpath-retain
   # Secret con usuario/clave/db para el contenedor de Postgres (no lo gestiona Helm)
   authSecretName: "postgres-auth"
   # init SQL (esto sí puede ir en ConfigMap)
