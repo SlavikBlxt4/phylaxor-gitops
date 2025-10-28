@@ -16,7 +16,7 @@ spec:
         imagePullPolicy: {{ .Values.images.decision.pullPolicy }}
         env:
         - name: REDIS_HOST
-          value: "redis.{{ .Values.namespace }}.svc.cluster.local"
+          value: "{{ .Values.serviceConnections.redis.host }}"
         - name: PG_DSN
           valueFrom:
             secretKeyRef:

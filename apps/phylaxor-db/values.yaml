@@ -1,0 +1,53 @@
+namespace: phylaxor-db
+
+
+redis:
+  enabled: true
+  image: redis:7
+  storage:
+    enabled: false
+    size: 1Gi
+    storageClassName: ""
+
+db:
+  existingSecret: "phylaxor-db"   # Secret con la DSN
+  dsnKey: "dsn"
+
+postgres:
+  enabled: true            # si quieres Postgres in-cluster para DEV
+  image: postgres:16
+  storage:
+    size: 10Gi
+    storageClassName: minikube-hostpath-retain
+  # Secret con usuario/clave/db para el contenedor de Postgres (no lo gestiona Helm)
+  authSecretName: "postgres-auth"
+  # init SQL (esto sí puede ir en ConfigMap)
+  initSql: |
+    create table if not exists alerts(
+      id bigserial primary key,
+      fingerprint text,
+      alertname text,
+      labels jsonb,
+      starts_at timestamptz,
+      status text,
+      created_at timestamptz default now()
+    );
+
+    create table if not exists decisions(
+      id bigserial primary key,
+      alert_id bigint references alerts(id),
+      path text, -- 'rule' | 'ai'
+      rule_id text,
+      context jsonb,
+      recommendation jsonb,
+      latency_ms int,
+      created_at timestamptz default now()
+    );
+
+    create table if not exists feedback(
+      id bigserial primary key,
+      decision_id bigint references decisions(id),
+      vote boolean,
+      notes text,
+      created_at timestamptz default now()
+    );

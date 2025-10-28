@@ -1,0 +1,5 @@
+apiVersion: v2
+name: phylaxor-db
+version: 0.1.0
+description: Placeholder chart for Phylaxor-db
+type: application

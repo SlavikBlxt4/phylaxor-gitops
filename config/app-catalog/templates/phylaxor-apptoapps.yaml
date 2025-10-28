@@ -1,0 +1,46 @@
+{{- $defaultRepo := "https://github.com/SlavikBlxt4/phylaxor-gitops.git" -}}
+{{- $incluster := "https://kubernetes.default.svc" -}}
+
+{{- range $name, $app := .Values.catalog }}
+{{- if $app.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $app.name }}
+  namespace: openshift-gitops
+{{- if $app.labels }}
+  labels:
+{{ toYaml $app.labels | indent 4 }}
+{{- end }}
+spec:
+  project: phylaxor
+  source:
+    repoURL: {{ $app.repo | default $defaultRepo | quote }}
+    targetRevision: {{ $app.revision | default "main" | quote }}
+    path: {{ $app.path | quote }}
+    {{- if $app.helm }}
+    helm:
+      {{- if $app.helm.valueFiles }}
+      valueFiles:
+{{ toYaml $app.helm.valueFiles | indent 8 }}
+      {{- end }}
+    {{- end }}
+  destination:
+    server: {{ $app.server | default $incluster | quote }}
+    namespace: {{ $app.namespace | quote }}
+  syncPolicy:
+    automated:
+      prune: {{ $app.prune | default false }}
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      {{- if $app.syncOptions }}
+{{ toYaml $app.syncOptions | indent 6 }}
+      {{- end }}
+  {{- if $app.ignoreDifferences }}
+  ignoreDifferences:
+{{ toYaml $app.ignoreDifferences | indent 4 }}
+  {{- end }}
+---
+{{- end }}
+{{- end }}

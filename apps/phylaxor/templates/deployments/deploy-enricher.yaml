@@ -20,6 +20,6 @@ spec:
         volumeMounts: [{ name: ctx, mountPath: /data }]
         env:
         - name: REDIS_HOST
-          value: "redis.{{ .Values.namespace }}.svc.cluster.local"
+          value: "{{ .Values.serviceConnections.redis.host }}"
         securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
         resources: {{- toYaml .Values.resources.enricher | nindent 10 }}
