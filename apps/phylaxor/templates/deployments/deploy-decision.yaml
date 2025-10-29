@@ -2,7 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: decision
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.namespace }}
+  annotations:
+    checksum/rules: {{ include (print $.Template.BasePath "/configmaps/configmap-rules.yaml") . | sha256sum }}
 spec:
   replicas: {{ .Values.replicas.decision }}
   selector: { matchLabels: { app: decision } }
@@ -12,15 +14,23 @@ spec:
       serviceAccountName: phylaxor-sa
       containers:
       - name: decision
+        volumeMounts:
+          - name: rules
+            mountPath: /app/rules.py
+            subPath: rules.py
         image: "{{ .Values.images.decision.repository }}:{{ .Values.images.decision.tag }}"
         imagePullPolicy: {{ .Values.images.decision.pullPolicy }}
         env:
         - name: REDIS_HOST
           value: "{{ .Values.serviceConnections.redis.host }}"
-        - name: PG_DSN
+        - name: PG_DSN #cambiar dsn por uno mas estructurado
           valueFrom:
             secretKeyRef:
               name: {{ .Values.db.existingSecret }}
               key:  {{ .Values.db.dsnKey }}
         - name: NOTIFIER_URL
           value: "http://notifier.{{ .Values.namespace }}.svc.cluster.local:8082/send"
+      volumes:
+        - name: rules
+          configMap:
+            name: rules

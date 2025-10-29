@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ingest
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.namespace }}
 spec:
   replicas: {{ .Values.replicas.ingest }}
   selector: { matchLabels: { app: ingest } }

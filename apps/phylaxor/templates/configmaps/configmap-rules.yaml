@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rules
+  labels:
+    app.kubernetes.io/part-of: phylaxor
+data:
+  rules.py: |
+    {{- .Files.Get "files/rules.py" | nindent 4 }}
