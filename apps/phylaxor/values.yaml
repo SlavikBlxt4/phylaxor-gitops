@@ -3,19 +3,19 @@ namespace: phylaxor
 images:
   ingest:
     repository: ghcr.io/slavikblxt4/phylaxor-ingest
-    tag: "0.1.1"
+    tag: "0.1.1" # ingest
     pullPolicy: IfNotPresent
   enricher:
     repository: ghcr.io/slavikblxt4/phylaxor-enricher
-    tag: "0.1.2"
+    tag: "0.1.2" # enricher
     pullPolicy: IfNotPresent
   decision:
     repository: ghcr.io/slavikblxt4/phylaxor-decision
-    tag: "0.1.0"
+    tag: "0.1.0" # decision
     pullPolicy: IfNotPresent
   notifier:
     repository: ghcr.io/slavikblxt4/phylaxor-notifier
-    tag: "0.1.0"
+    tag: "0.1.0" # notifier
     pullPolicy: IfNotPresent
 
 ingress:
