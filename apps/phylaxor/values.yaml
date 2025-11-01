@@ -1,5 +1,4 @@
 namespace: phylaxor
-
 images:
   ingest:
     repository: ghcr.io/slavikblxt4/phylaxor-ingest
@@ -11,32 +10,26 @@ images:
     pullPolicy: IfNotPresent
   decision:
     repository: ghcr.io/slavikblxt4/phylaxor-decision
-    tag: "2025.11.01-124402" # decision
+    tag: "r25-4a09121" # decision
     pullPolicy: IfNotPresent
   notifier:
     repository: ghcr.io/slavikblxt4/phylaxor-notifier
     tag: "0.1.0" # notifier
     pullPolicy: IfNotPresent
-
 ingress:
   service: ingest
-
 imagePullSecrets:
   - ghcr-creds
-
-
 replicas:
   ingest: 1
   enricher: 1
   decision: 1
   notifier: 1
-
 resources:
-  ingest: { requests: { cpu: 100m, memory: 128Mi }, limits: { cpu: 500m, memory: 256Mi } }
-  enricher: { requests: { cpu: 50m, memory: 64Mi }, limits: { cpu: 200m, memory: 128Mi } }
-  decision: { requests: { cpu: 150m, memory: 256Mi }, limits: { cpu: 500m, memory: 512Mi } }
-  notifier: { requests: { cpu: 50m, memory: 64Mi }, limits: { cpu: 200m, memory: 128Mi } }
-
+  ingest: {requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: 500m, memory: 256Mi}}
+  enricher: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
+  decision: {requests: {cpu: 150m, memory: 256Mi}, limits: {cpu: 500m, memory: 512Mi}}
+  notifier: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
 # CAMBIAR A SIGUIENTE CONFIGURACION CUANDO PASEMOS A PRODUCCION
 # securityContext:
 #   runAsNonRoot: true
@@ -47,21 +40,17 @@ resources:
 #   allowPrivilegeEscalation: false
 #   seccompProfile:
 #     type: RuntimeDefault
-
 securityContext:
   runAsNonRoot: false
   allowPrivilegeEscalation: true
   readOnlyRootFilesystem: false
-
 db:
-  existingSecret: "phylaxor-db"   # Secret con la DSN
+  existingSecret: "phylaxor-db" # Secret con la DSN
   dsnKey: "dsn"
-
 telegram:
   existingSecret: "phylaxor-telegram"
   tokenKey: "token"
   chatIdKey: "chat_id"
-
 env:
   enricherContext:
     platform: "k8s"
@@ -69,12 +58,10 @@ env:
     version: "1.32"
     storage: "hostpath"
     operators: ["prom-operator"]
-
 expose:
-  type: none              # none | ingress
+  type: none # none | ingress
   host: phylaxor.localtest.me
   ingressClassName: nginx
-
 serviceConnections:
   redis:
     host: "redis.phylaxor-db.svc.cluster.local"
