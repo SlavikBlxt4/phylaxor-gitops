@@ -11,6 +11,7 @@ spec:
     metadata:
       labels: { app: feedback }
     spec:
+      serviceAccountName: phylaxor-sa
       containers:
       - name: feedback
         image: "{{ .Values.images.feedback.repository }}:{{ .Values.images.feedback.tag }}"
