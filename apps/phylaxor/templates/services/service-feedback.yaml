@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: feedback
+  namespace: {{ .Values.namespace }}
+spec:
+  selector: { app: feedback }
+  ports:
+  - name: http
+    port: 8083
+    targetPort: 8083

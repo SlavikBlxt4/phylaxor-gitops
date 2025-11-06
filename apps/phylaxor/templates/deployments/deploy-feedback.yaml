@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feedback
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: feedback }
+  template:
+    metadata:
+      labels: { app: feedback }
+    spec:
+      containers:
+      - name: feedback
+        image: "{{ .Values.images.feedback.repository }}:{{ .Values.images.feedback.tag }}"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PG_DSN
+          valueFrom:
+            secretKeyRef:
+              name: phylaxor-db
+              key: dsn
