@@ -16,11 +16,10 @@ images:
     repository: ghcr.io/slavikblxt4/phylaxor-notifier
     tag: "0.1.0" # notifier
     pullPolicy: IfNotPresent
-  feedback:
-    repository: ghcr.io/slavikblxt4/phylaxor-feedback
-    tag: "0.1.0" # feedback
   feedback-api:
-    tag: r29-91a507c
+    repository: ghcr.io/slavikblxt4/phylaxor-feedback-api
+    tag: r29-91a507c # feedback-api
+    pullPolicy: IfNotPresent
 ingress:
   service: ingest
 imagePullSecrets:

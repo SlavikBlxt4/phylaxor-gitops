@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: feedback
+  name: feedback-api
   namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:
-    matchLabels: { app: feedback }
+    matchLabels: { app: feedback-api }
   template:
     metadata:
-      labels: { app: feedback }
+      labels: { app: feedback-api }
     spec:
       containers:
       - name: feedback
-        image: "{{ .Values.images.feedback.repository }}:{{ .Values.images.feedback.tag }}"
+        image: "{{ .Values.images.feedback-api.repository }}:{{ .Values.images.feedback-api.tag }}"
         imagePullPolicy: IfNotPresent
         env:
         - name: PG_DSN
