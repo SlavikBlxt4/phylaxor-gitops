@@ -18,7 +18,7 @@ images:
     pullPolicy: IfNotPresent
   feedback:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback
-    tag: r30-dcd163a # feedback
+    tag: "r30-dcd163a" # feedback
     pullPolicy: IfNotPresent
 ingress:
   service: ingest
