@@ -19,7 +19,8 @@ images:
   feedback:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback
     tag: "0.1.0" # feedback
-
+  feedback-api:
+    tag: r29-91a507c
 ingress:
   service: ingest
 imagePullSecrets:
