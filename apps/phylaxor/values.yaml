@@ -21,7 +21,7 @@ images:
     tag: "r32-6bcd1b2" # feedback
     pullPolicy: IfNotPresent
   feedback_gateway:
-    repository: ghcr.io/slavikblxt4/phylaxor-feedback-gateway
+    repository: ghcr.io/slavikblxt4/phylaxor-feedback_gateway
     tag: "r36-a875715" # feedback_gateway
     pullPolicy: IfNotPresent
 ingress:
