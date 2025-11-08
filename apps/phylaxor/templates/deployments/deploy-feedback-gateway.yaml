@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feedback-gateway
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicas.feedback_gateway }}
+  selector:
+    matchLabels: { app: feedback-gateway }
+  template:
+    metadata:
+      labels: { app: feedback-gateway }
+    spec:
+      serviceAccountName: phylaxor-sa
+      containers:
+      - name: feedback-gateway
+        image: "{{ .Values.images.feedback_gateway.repository }}:{{ .Values.images.feedback_gateway.tag }}"
+        imagePullPolicy: {{ .Values.images.feedback_gateway.pullPolicy }}
+        env:
+        - name: TELEGRAM_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.telegram.existingSecret }}
+              key: {{ .Values.telegram.tokenKey }}
+        - name: FEEDBACK_URL
+          value: "http://feedback.{{ .Release.Namespace }}.svc.cluster.local:8083/feedback"
+        securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
+        resources: {{- toYaml .Values.resources.feedback_gateway | nindent 10 }}

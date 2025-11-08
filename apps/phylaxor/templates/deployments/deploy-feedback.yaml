@@ -4,7 +4,7 @@ metadata:
   name: feedback
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas.feedback }}
   selector:
     matchLabels: { app: feedback }
   template:

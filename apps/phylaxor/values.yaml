@@ -20,11 +20,17 @@ images:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback
     tag: "r32-6bcd1b2" # feedback
     pullPolicy: IfNotPresent
+  feedback_gateway:
+    repository: ghcr.io/slavikblxt4/phylaxor-feedback-gateway
+    tag: "r1-initial" # feedback_gateway
+    pullPolicy: IfNotPresent
 ingress:
   service: ingest
 imagePullSecrets:
   - ghcr-creds
 replicas:
+  feedback_gateway: 1
+  feedback: 1
   ingest: 1
   enricher: 1
   decision: 1
@@ -34,6 +40,7 @@ resources:
   enricher: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
   decision: {requests: {cpu: 150m, memory: 256Mi}, limits: {cpu: 500m, memory: 512Mi}}
   notifier: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
+  feedback_gateway: {requests: {cpu: 20m, memory: 32Mi}, limits: {cpu: 100m, memory: 64Mi}}
 # CAMBIAR A SIGUIENTE CONFIGURACION CUANDO PASEMOS A PRODUCCION
 # securityContext:
 #   runAsNonRoot: true
