@@ -14,7 +14,7 @@ images:
     pullPolicy: IfNotPresent
   notifier:
     repository: ghcr.io/slavikblxt4/phylaxor-notifier
-    tag: "r34-328256c" # notifier
+    tag: "r35-43d0e9e" # notifier
     pullPolicy: IfNotPresent
   feedback:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback
