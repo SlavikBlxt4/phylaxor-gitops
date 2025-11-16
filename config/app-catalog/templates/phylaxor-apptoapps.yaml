@@ -13,7 +13,7 @@ metadata:
 {{ toYaml $app.labels | indent 4 }}
 {{- end }}
 spec:
-  project: phylaxor
+  project: default
   source:
     repoURL: {{ $app.repo | default $defaultRepo | quote }}
     targetRevision: {{ $app.revision | default "main" | quote }}
