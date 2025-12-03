@@ -1,0 +1,47 @@
+namespace: openshift-gitops
+catalog:
+  phylaxor-app:
+    enabled: true
+    name: phylaxor-app
+    repo: https://github.com/SlavikBlxt4/phylaxor-gitops.git
+    revision: main
+    path: apps/phylaxor
+    namespace: phylaxor
+    helm:
+      valueFiles:
+        - values.yaml
+    prune: true            # esta sí puede ‘prunearse’ sin miedo
+    labels:
+      app.kubernetes.io/part-of: phylaxor
+    ignoreDifferences:     # ignora campos gestionados por Kube/DownwardAPI
+      - kind: Deployment
+        group: apps
+        jsonPointers:
+          - /spec/template/spec/containers/0/image
+      - kind: ServiceAccount
+        jsonPointers:
+          - /secrets
+  phylaxor-db:
+    enabled: true
+    name: phylaxor-db
+    repo: https://github.com/SlavikBlxt4/phylaxor-gitops.git
+    revision: main
+    path: apps/phylaxor-db
+    namespace: phylaxor-db
+    helm:
+      valueFiles:
+        - values.yaml
+    prune: false           # 🔒 NO prunear datos por accidente
+    labels:
+      app.kubernetes.io/part-of: phylaxor
+    ignoreDifferences:     # evita drift en PVC/PV gestionados por el provisioner
+      - kind: PersistentVolumeClaim
+        jsonPointers:
+          - /status
+          - /spec/resources/requests/storage
+      - kind: StatefulSet
+        group: apps
+        jsonPointers:
+          - /spec/volumeClaimTemplates
+    syncOptions:
+      - PruneLast=true

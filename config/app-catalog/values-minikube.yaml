@@ -1,3 +1,4 @@
+namespace: argocd
 catalog:
   phylaxor-app:
     enabled: true
