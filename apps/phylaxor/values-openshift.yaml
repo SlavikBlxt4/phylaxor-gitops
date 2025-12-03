@@ -1,0 +1,83 @@
+namespace: phylaxor
+manualAlertManagerConfig: false # OpenShift usa su propio AlertManager
+images:
+  ingest:
+    repository: ghcr.io/slavikblxt4/phylaxor-ingest
+    tag: "0.1.1" # ingest
+    pullPolicy: IfNotPresent
+  enricher:
+    repository: ghcr.io/slavikblxt4/phylaxor-enricher
+    tag: "r41-03d2cde" # enricher
+    pullPolicy: IfNotPresent
+  decision:
+    repository: ghcr.io/slavikblxt4/phylaxor-decision
+    tag: "r26-f1760c1" # decision
+    pullPolicy: IfNotPresent
+  notifier:
+    repository: ghcr.io/slavikblxt4/phylaxor-notifier
+    tag: "r35-43d0e9e" # notifier
+    pullPolicy: IfNotPresent
+  feedback:
+    repository: ghcr.io/slavikblxt4/phylaxor-feedback
+    tag: "r43-c862a77" # feedback
+    pullPolicy: IfNotPresent
+  feedback_gateway:
+    repository: ghcr.io/slavikblxt4/phylaxor-feedback_gateway
+    tag: "r37-dca10f4" # feedback_gateway
+    pullPolicy: IfNotPresent
+ingress:
+  service: ingest
+imagePullSecrets:
+  - ghcr-creds
+replicas:
+  feedback_gateway: 1
+  feedback: 1
+  ingest: 1
+  enricher: 1
+  decision: 1
+  notifier: 1
+resources:
+  ingest: {requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: 500m, memory: 256Mi}}
+  enricher: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
+  decision: {requests: {cpu: 150m, memory: 256Mi}, limits: {cpu: 500m, memory: 512Mi}}
+  notifier: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
+  feedback_gateway: {requests: {cpu: 20m, memory: 32Mi}, limits: {cpu: 100m, memory: 64Mi}}
+# CAMBIAR A SIGUIENTE CONFIGURACION CUANDO PASEMOS A PRODUCCION
+# securityContext:
+#   runAsNonRoot: true
+#   runAsUser: 10001
+#   runAsGroup: 10001
+#   fsGroup: 10001
+#   readOnlyRootFilesystem: false
+#   allowPrivilegeEscalation: false
+#   seccompProfile:
+#     type: RuntimeDefault
+securityContext:
+  runAsNonRoot: false
+  allowPrivilegeEscalation: true
+  readOnlyRootFilesystem: false
+db:
+  existingSecret: "phylaxor-db" # Secret con la DSN
+  dsnKey: "dsn"
+telegram:
+  existingSecret: "phylaxor-telegram"
+  tokenKey: "token"
+  chatIdKey: "chat_id"
+env:
+  enricherContext:
+    platform: "k8s"
+    cluster: "minikube"
+    version: "1.32"
+    storage: "hostpath"
+    operators: ["prom-operator"]
+expose:
+  type: none # none | ingress
+  host: phylaxor.localtest.me
+  ingressClassName: nginx
+serviceConnections:
+  redis:
+    host: "redis.phylaxor-db.svc.cluster.local"
+    port: 6379
+  postgres:
+    host: "postgres.phylaxor-db.svc.cluster.local"
+    port: 5432
