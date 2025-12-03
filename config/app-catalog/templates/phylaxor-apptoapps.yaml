@@ -7,7 +7,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: {{ $app.name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ $.Values.namespace }}
 {{- if $app.labels }}
   labels:
 {{ toYaml $app.labels | indent 4 }}
