@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: phylaxor-gitops-manager
+  name: phylaxordb-gitops-manager
   annotations:
     argocd.argoproj.io/sync-wave: "-20"
   labels:
