@@ -9,7 +9,7 @@ catalog:
     namespace: phylaxor
     helm:
       valueFiles:
-        - values.yaml
+        - values-minikube.yaml
     prune: true            # esta sí puede ‘prunearse’ sin miedo
     labels:
       app.kubernetes.io/part-of: phylaxor
@@ -30,7 +30,7 @@ catalog:
     namespace: phylaxor-db
     helm:
       valueFiles:
-        - values.yaml
+        - values-minikube.yaml
     prune: false           # 🔒 NO prunear datos por accidente
     labels:
       app.kubernetes.io/part-of: phylaxor
