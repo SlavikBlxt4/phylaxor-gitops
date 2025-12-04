@@ -15,7 +15,7 @@ db:
 
 postgres:
   enabled: true            # si quieres Postgres in-cluster para DEV
-  image: postgres:16
+  image: rhel9/postgres-16
   storage:
     size: 10Gi
     storageClassName: crc-csi-hostpath-provisioner
