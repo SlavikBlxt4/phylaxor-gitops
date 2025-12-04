@@ -21,6 +21,7 @@ catalog:
       - kind: ServiceAccount
         jsonPointers:
           - /secrets
+          - /imagePullSecrets
   phylaxor-db:
     enabled: true
     name: phylaxor-db
