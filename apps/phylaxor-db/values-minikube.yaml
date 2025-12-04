@@ -14,6 +14,7 @@ db:
   dsnKey: "dsn"
 
 postgres:
+  mountPath: /var/lib/postgresql/data
   enabled: true            # si quieres Postgres in-cluster para DEV
   image: postgres:16
   storage:

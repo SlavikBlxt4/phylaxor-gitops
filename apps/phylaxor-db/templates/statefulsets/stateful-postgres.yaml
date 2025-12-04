@@ -18,7 +18,7 @@ spec:
         ports: [{ containerPort: 5432 }]
         volumeMounts:
         - name: data
-          mountPath: /var/lib/postgresql/data
+          mountPath: {{ .Values.postgres.mountPath }}
         - name: init
           mountPath: /docker-entrypoint-initdb.d
       volumes:
