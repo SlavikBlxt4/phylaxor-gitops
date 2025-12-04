@@ -15,7 +15,7 @@ db:
 
 postgres:
   enabled: true            # si quieres Postgres in-cluster para DEV
-  image: rhel9/postgres-16:latest
+  image: registry.redhat.io/rhel9/postgresql-16:latest
   storage:
     size: 10Gi
     storageClassName: crc-csi-hostpath-provisioner
