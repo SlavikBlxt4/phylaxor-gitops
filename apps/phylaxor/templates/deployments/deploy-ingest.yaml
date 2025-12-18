@@ -9,7 +9,7 @@ spec:
   template:
     metadata: { labels: { app: ingest } }
     spec:
-      serviceAccountName: phylaxor-sa
+      serviceAccountName: {{ include "phylaxor.sa" "ingest" }}
       containers:
       - name: ingest
         image: "{{ .Values.images.ingest.repository }}:{{ .Values.images.ingest.tag }}"

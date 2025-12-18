@@ -11,7 +11,7 @@ spec:
     metadata:
       labels: { app: feedback-gateway }
     spec:
-      serviceAccountName: phylaxor-sa
+      serviceAccountName: {{ include "phylaxor.sa" "feedback-gateway" }}
       containers:
       - name: feedback-gateway
         image: "{{ .Values.images.feedback_gateway.repository }}:{{ .Values.images.feedback_gateway.tag }}"

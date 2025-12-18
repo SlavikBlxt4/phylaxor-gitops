@@ -1,13 +1,13 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: phylaxor-role
-  namespace: {{ .Values.namespace }}
+  name: phylaxor-enricher-role
+  namespace: {{ .Release.Namespace }}
 rules:
 - apiGroups: [""]
   resources: ["pods","events"]
   verbs: ["get","list","watch"]
-{{- if eq .Values.logging.mode "podlogs" }}
+{{- if eq (.Values.logs.mode | default .Values.logging.mode) "podlogs" }}
 - apiGroups: [""]
   resources: ["pods/log"]
   verbs: ["get"]

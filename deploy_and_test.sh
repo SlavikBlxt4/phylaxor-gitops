@@ -9,7 +9,8 @@
 set -e
 
 NAMESPACE="phylaxor"
-SA_NAME="phylaxor-sa"
+# Use enricher service account for RBAC validation
+SA_NAME="phylaxor-enricher-sa"
 SERVICE_ACCOUNT="system:serviceaccount:${NAMESPACE}:${SA_NAME}"
 CHART_PATH="./apps/phylaxor"
 VALUES_FILE="./apps/phylaxor/values-openshift.yaml"
@@ -93,7 +94,7 @@ echo "Command: helm upgrade --install phylaxor ${CHART_PATH} -f ${VALUES_FILE} -
 echo ""
 
 helm upgrade --install phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} \
-  --set logging.mode=none \
+  --set logs.mode=none \
   --wait --timeout 5m
 
 echo ""
@@ -110,11 +111,11 @@ echo -e "${BLUE}═════════════════════�
 echo ""
 
 echo "Role in namespace (${NAMESPACE}):"
-oc -n ${NAMESPACE} get role phylaxor-role -o wide || echo "  (not yet deployed)"
+oc -n ${NAMESPACE} get role phylaxor-enricher-role -o wide || echo "  (not yet deployed)"
 echo ""
 
 echo "RoleBinding in namespace (${NAMESPACE}):"
-oc -n ${NAMESPACE} get rolebinding phylaxor-rb -o wide || echo "  (not yet deployed)"
+oc -n ${NAMESPACE} get rolebinding phylaxor-enricher-rb -o wide || echo "  (not yet deployed)"
 echo ""
 
 echo "ClusterRole:"
@@ -172,7 +173,7 @@ test_permission "pods" "watch" "yes"
 test_permission "events" "get" "yes"
 test_permission "events" "list" "yes"
 test_permission "events" "watch" "yes"
-test_permission "pods/log" "get" "no"  # Should fail for logging.mode=none
+test_permission "pods/log" "get" "no"  # Should fail for logs.mode=none
 echo ""
 
 echo "CLUSTER-SCOPED PERMISSIONS:"
@@ -220,6 +221,6 @@ echo "  • Test permissions:          oc -n ${NAMESPACE} auth can-i list pods -
 echo "  • Describe pod:              oc -n ${NAMESPACE} describe pod -l app=enricher"
 echo ""
 echo "To test with different logging modes:"
-echo "  helm upgrade phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} --set logging.mode=podlogs"
-echo "  helm upgrade phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} --set logging.mode=loki"
+echo "  helm upgrade phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} --set logs.mode=podlogs"
+echo "  helm upgrade phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} --set logs.mode=loki"
 echo ""

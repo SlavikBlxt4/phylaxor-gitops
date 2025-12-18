@@ -5,19 +5,19 @@
 The phylaxor enricher supports three logging modes, each with different RBAC permissions and capabilities:
 
 | Mode | Description | RBAC | Use Case |
-|------|-------------|------|----------|
+oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 | `none` | No pod logs fetched | Minimal - no pods/log access | Default, lightweight, privacy-focused |
 | `loki` | Logs sent to external Loki/ELK | Minimal - no pods/log access | Centralized logging, external system stores logs |
 | `podlogs` | Direct K8s API pod log access | Explicit - pods/log permission required | Full context, requires cluster permissions |
-
+oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 ---
 
 ## RBAC Structure
-
+oc -n phylaxor auth can-i list events --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 ### Namespace-Scoped (Role + RoleBinding)
 
 Located in: `templates/security/role.yaml` and `templates/security/rolebinding.yaml`
-
+oc -n phylaxor auth can-i get nodes --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 **Always granted:**
 - `pods`: get, list, watch
 - `events`: get, list, watch
@@ -26,44 +26,44 @@ Located in: `templates/security/role.yaml` and `templates/security/rolebinding.y
 - `pods/log`: get
 
 ### Cluster-Scoped (ClusterRole + ClusterRoleBinding)
-
-Located in: `templates/security/enricher-rbac/clusterrole.yaml` and `clusterrolebinding.yaml`
+oc -n phylaxor get sa phylaxor-enricher-sa
+# Should show: phylaxor-enricher-sa with image pull secrets configured
 
 **Always granted:**
 - `nodes`: get, list, watch
 - `namespaces`: get, list, watch
-- `storageclasses`: get, list, watch
-
----
+oc -n phylaxor get role phylaxor-enricher-role -o yaml
+# Should show: pods, events permissions always
+#             pods/log permission only if logging.mode=podlogs
 
 ## Deployment Steps
 
 ### 1. Pull Latest Changes
-
-```bash
+oc -n phylaxor get rolebinding phylaxor-enricher-rb -o yaml
+# Should show: phylaxor-enricher-sa bound to phylaxor-enricher-role
 cd ~/github/phylaxor-gitops
 git pull
 ```
 
-### 2. Login to OpenShift Cluster
-
+oc get clusterrole phylaxor-read-cluster -o yaml
+# Should show: nodes, namespaces, storageclasses permissions
 ```bash
 oc login -u kubeadmin -p tNRvC-qD8rk-hnRtS-hNMrZ https://api.crc.testing:6443 --insecure-skip-tls-verify=true
 ```
 
-### 3. Deploy with Default Configuration (logging.mode=none)
-
+oc get clusterrolebinding phylaxor-read-cluster-binding -o yaml
+# Should show: phylaxor-enricher-sa bound to phylaxor-read-cluster
 ```bash
 # Full deployment with validation
 bash /path/to/deploy_and_test.sh
 ```
-
-Or manually:
+oc -n phylaxor describe pod -l app=enricher | grep "Service Account"
+# Should show: phylaxor-enricher-sa
 
 ```bash
 helm upgrade --install phylaxor ./apps/phylaxor \
   -f apps/phylaxor/values-openshift.yaml \
-  -n phylaxor \
+helm upgrade phylaxor ./apps/phylaxor -f apps/phylaxor/values-openshift.yaml -n phylaxor --force
   --create-namespace
 ```
 
@@ -81,26 +81,26 @@ bash quick_rbac_test.sh
 
 Test if enricher can read pods:
 ```bash
-oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-sa
+oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: yes (for all modes)
 ```
 
 Test if enricher can read pod logs:
 ```bash
-oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-sa
+oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: yes (only for logging.mode=podlogs)
 # Output: no (for logging.mode=none or loki)
 ```
 
 Test if enricher can read events:
 ```bash
-oc -n phylaxor auth can-i list events --as=system:serviceaccount:phylaxor:phylaxor-sa
+oc -n phylaxor auth can-i list events --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: yes (for all modes)
 ```
 
 Test if enricher can read nodes:
 ```bash
-oc -n phylaxor auth can-i get nodes --as=system:serviceaccount:phylaxor:phylaxor-sa
+oc -n phylaxor auth can-i get nodes --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: yes (for all modes - cluster-scoped)
 ```
 
@@ -117,7 +117,7 @@ helm upgrade phylaxor ./apps/phylaxor \
   --set logging.mode=none
 
 # Expected: No pods/log permission
-oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-sa
+oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: no
 ```
 
@@ -141,7 +141,7 @@ helm upgrade phylaxor ./apps/phylaxor \
   --set logging.mode=loki
 
 # Expected: No pods/log permission (logs from Loki, not K8s API)
-oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-sa
+oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: no
 ```
 
@@ -166,7 +166,7 @@ helm upgrade phylaxor ./apps/phylaxor \
   --set logging.mode=podlogs
 
 # Expected: pods/log permission GRANTED
-oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-sa
+oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: yes
 ```
 
@@ -188,21 +188,21 @@ After deployment, verify:
 
 ### ServiceAccount Setup
 ```bash
-oc -n phylaxor get sa phylaxor-sa
-# Should show: phylaxor-sa with image pull secrets configured
+oc -n phylaxor get sa phylaxor-enricher-sa
+# Should show: phylaxor-enricher-sa with image pull secrets configured
 ```
 
 ### Role Configuration
 ```bash
-oc -n phylaxor get role phylaxor-role -o yaml
+oc -n phylaxor get role phylaxor-enricher-role -o yaml
 # Should show: pods, events permissions always
 #             pods/log permission only if logging.mode=podlogs
 ```
 
 ### RoleBinding Setup
 ```bash
-oc -n phylaxor get rolebinding phylaxor-rb -o yaml
-# Should show: phylaxor-sa bound to phylaxor-role
+oc -n phylaxor get rolebinding phylaxor-enricher-rb -o yaml
+# Should show: phylaxor-enricher-sa bound to phylaxor-enricher-role
 ```
 
 ### ClusterRole Configuration
@@ -214,7 +214,7 @@ oc get clusterrole phylaxor-read-cluster -o yaml
 ### ClusterRoleBinding Setup
 ```bash
 oc get clusterrolebinding phylaxor-read-cluster-binding -o yaml
-# Should show: phylaxor-sa bound to phylaxor-read-cluster
+# Should show: phylaxor-enricher-sa bound to phylaxor-read-cluster
 ```
 
 ### Enricher Pod Status
@@ -243,7 +243,7 @@ oc -n phylaxor get rolebinding phylaxor-rb -o yaml
 **Check 3: Does the pod use the correct SA?**
 ```bash
 oc -n phylaxor describe pod -l app=enricher | grep "Service Account"
-# Should show: phylaxor-sa
+# Should show: phylaxor-enricher-sa
 ```
 
 **Fix: Redeploy the chart**

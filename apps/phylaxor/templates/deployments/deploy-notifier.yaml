@@ -9,7 +9,7 @@ spec:
   template:
     metadata: { labels: { app: notifier } }
     spec:
-      serviceAccountName: phylaxor-sa
+      serviceAccountName: {{ include "phylaxor.sa" "notifier" }}
       containers:
       - name: notifier
         image: "{{ .Values.images.notifier.repository }}:{{ .Values.images.notifier.tag }}"

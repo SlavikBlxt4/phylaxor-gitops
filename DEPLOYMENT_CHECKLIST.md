@@ -76,10 +76,10 @@ bash quick_rbac_test.sh
 
 | Permission | Should Have | Command |
 |-----------|-------------|---------|
-| get pods | ✅ Yes | `oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-sa` |
-| list events | ✅ Yes | `oc -n phylaxor auth can-i list events --as=system:serviceaccount:phylaxor:phylaxor-sa` |
-| get pods/log | ❌ No | `oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-sa` |
-| get nodes | ✅ Yes | `oc -n phylaxor auth can-i get nodes --as=system:serviceaccount:phylaxor:phylaxor-sa` |
+| get pods | ✅ Yes | `oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
+| list events | ✅ Yes | `oc -n phylaxor auth can-i list events --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
+| get pods/log | ❌ No | `oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
+| get nodes | ✅ Yes | `oc -n phylaxor auth can-i get nodes --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
 
 ### Logging Mode: "loki"
 
@@ -89,10 +89,10 @@ Same as "none" - pods/log permission NOT granted (logs from external Loki system
 
 | Permission | Should Have | Command |
 |-----------|-------------|---------|
-| get pods | ✅ Yes | `oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-sa` |
-| list events | ✅ Yes | `oc -n phylaxor auth can-i list events --as=system:serviceaccount:phylaxor:phylaxor-sa` |
-| get pods/log | ✅ **Yes** | `oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-sa` |
-| get nodes | ✅ Yes | `oc -n phylaxor auth can-i get nodes --as=system:serviceaccount:phylaxor:phylaxor-sa` |
+| get pods | ✅ Yes | `oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
+| list events | ✅ Yes | `oc -n phylaxor auth can-i list events --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
+| get pods/log | ✅ **Yes** | `oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
+| get nodes | ✅ Yes | `oc -n phylaxor auth can-i get nodes --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
 
 ---
 
@@ -209,7 +209,7 @@ oc get all -n phylaxor
 oc describe ns phylaxor
 
 # RBAC testing
-oc -n phylaxor auth can-i list pods --as=system:serviceaccount:phylaxor:phylaxor-sa
+oc -n phylaxor auth can-i list pods --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 oc -n phylaxor auth can-i-list  # Show all permissions for SA
 
 # Pod inspection

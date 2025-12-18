@@ -3,7 +3,8 @@
 # Quick RBAC Test Script - Run this to verify enricher permissions
 
 NAMESPACE="phylaxor"
-SA_NAME="phylaxor-sa"
+# Test the enricher service account by default
+SA_NAME="phylaxor-enricher-sa"
 SERVICE_ACCOUNT="system:serviceaccount:${NAMESPACE}:${SA_NAME}"
 
 # Colors
