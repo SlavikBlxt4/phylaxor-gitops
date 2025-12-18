@@ -7,7 +7,7 @@ images:
     pullPolicy: IfNotPresent
   enricher:
     repository: ghcr.io/slavikblxt4/phylaxor-enricher
-    tag: "r41-03d2cde" # enricher
+    tag: "r47-843a335" # enricher
     pullPolicy: IfNotPresent
   decision:
     repository: ghcr.io/slavikblxt4/phylaxor-decision
