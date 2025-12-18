@@ -48,6 +48,13 @@ securityContext:
   readOnlyRootFilesystem: false
   seccompProfile:
     type: RuntimeDefault
+logging:
+  mode: "none"
+  eventsEnabled: true
+  maxLines: 500
+  maxBytes: 100000
+  lookbackSeconds: 300
+  timeout: 5
 db:
   existingSecret: "phylaxor-db" # Secret con la DSN
   dsnKey: "dsn"

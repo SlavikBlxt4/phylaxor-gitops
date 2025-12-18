@@ -3,8 +3,13 @@ kind: ClusterRole
 metadata: { name: phylaxor-read-cluster }
 rules:
 - apiGroups: [""]              # core
-  resources: ["nodes"]
+  resources: ["nodes","pods","events","namespaces"]
   verbs: ["get","list"]
 - apiGroups: ["storage.k8s.io"]
   resources: ["storageclasses"]
   verbs: ["get","list"]
+{{- if eq .Values.logging.mode "podlogs" }}
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get"]
+{{- end }}
