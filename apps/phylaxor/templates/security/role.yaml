@@ -6,4 +6,9 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["pods","events"]
-  verbs: ["get","list"]
+  verbs: ["get","list","watch"]
+{{- if eq .Values.logging.mode "podlogs" }}
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get"]
+{{- end }}
