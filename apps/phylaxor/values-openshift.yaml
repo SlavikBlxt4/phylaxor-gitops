@@ -1,4 +1,5 @@
 namespace: phylaxor
+namespaceCreate: false
 manualAlertManagerConfig: false # OpenShift usa su propio AlertManager
 images:
   ingest:

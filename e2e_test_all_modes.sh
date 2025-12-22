@@ -43,7 +43,18 @@ test_rbac_permission() {
   local verb="$3"
   local expected="$4"
   
-  result=$(oc -n ${NAMESPACE} auth can-i ${verb} ${resource} --as=${sa} 2>&1)
+  local base_resource="${resource}"
+  local subresource=""
+  if [[ "${resource}" == */* ]]; then
+    base_resource="${resource%%/*}"
+    subresource="${resource#*/}"
+  fi
+
+  if [[ -n "${subresource}" ]]; then
+    result=$(oc -n ${NAMESPACE} auth can-i ${verb} ${base_resource} --subresource=${subresource} --as=${sa} 2>&1)
+  else
+    result=$(oc -n ${NAMESPACE} auth can-i ${verb} ${base_resource} --as=${sa} 2>&1)
+  fi
   
   if [[ ${result} == "yes" ]]; then
     if [[ ${expected} == "yes" ]]; then
@@ -72,6 +83,7 @@ deploy_mode() {
   helm upgrade --install phylaxor ${CHART_PATH} \
     -f ${VALUES_FILE} \
     -n ${NAMESPACE} --create-namespace \
+    --set namespaceCreate=false \
     --set logging.mode=${mode} \
     --wait --timeout 3m 2>&1 | tail -20
   
@@ -104,9 +116,19 @@ trigger_alert_prometheus_rule() {
 
 trigger_alert_manual_webhook() {
   log_section "TRIGGERING ALERT VIA MANUAL WEBHOOK POST"
+
+  local target_pod
+  target_pod=$(oc -n ${NAMESPACE} get pod -l app=enricher -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)
+  if [[ -z "${target_pod}" ]]; then
+    target_pod=$(oc -n ${NAMESPACE} get pod -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)
+  fi
+  if [[ -z "${target_pod}" ]]; then
+    log_error "No pod found in namespace ${NAMESPACE}; cannot include pod label for log testing"
+    return 1
+  fi
   
   # Create temporary webhook payload
-  cat > /tmp/alert_payload.json << 'EOF'
+  cat > /tmp/alert_payload.json << EOF
 [
   {
     "receiver": "phylaxor",
@@ -117,7 +139,8 @@ trigger_alert_manual_webhook() {
         "labels": {
           "alertname": "PhylaxorE2ETest",
           "severity": "info",
-          "namespace": "phylaxor"
+          "namespace": "${NAMESPACE}",
+          "pod": "${target_pod}"
         },
         "annotations": {
           "summary": "E2E Test Alert",
@@ -143,15 +166,14 @@ EOF
     return 1
   fi
   
-  ingest_url="http://${ingest_ip}:8080/alert"
+  ingest_url="http://ingest.${NAMESPACE}.svc.cluster.local:8080/alert"
   log_info "Sending webhook to: ${ingest_url}"
   
   # Try to POST the alert directly from a pod in the cluster
-  oc -n ${NAMESPACE} run webhook-trigger --rm -it --restart=Never \
+  cat /tmp/alert_payload.json | oc -n ${NAMESPACE} run webhook-trigger --rm -i --restart=Never \
     --image=curlimages/curl:latest -- \
-    curl -s -X POST -H 'Content-Type: application/json' \
-    --data @/tmp/alert_payload.json \
-    http://ingest.${NAMESPACE}.svc.cluster.local:8080/alert 2>&1 | head -20
+    sh -c "cat > /tmp/alert_payload.json && curl -s -X POST -H 'Content-Type: application/json' \
+      --data @/tmp/alert_payload.json ${ingest_url}" 2>&1 | head -20
   
   log_success "Manual webhook POST sent"
   sleep 5

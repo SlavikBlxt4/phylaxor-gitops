@@ -90,10 +90,11 @@ echo -e "${BLUE}═════════════════════�
 echo "STEP 3: Deploying Phylaxor Helm Chart"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════════════════${NC}"
 echo ""
-echo "Command: helm upgrade --install phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE}"
+echo "Command: helm upgrade --install phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} --set namespaceCreate=false"
 echo ""
 
 helm upgrade --install phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} \
+  --set namespaceCreate=false \
   --set logging.mode=none \
   --wait --timeout 5m
 
@@ -144,7 +145,18 @@ test_permission() {
   local expected=$3
   local scope=$4
   
-  result=$(oc -n ${NAMESPACE} auth can-i ${verb} ${resource} --as=${SERVICE_ACCOUNT} 2>&1)
+  local base_resource="${resource}"
+  local subresource=""
+  if [[ "${resource}" == */* ]]; then
+    base_resource="${resource%%/*}"
+    subresource="${resource#*/}"
+  fi
+
+  if [[ -n "${subresource}" ]]; then
+    result=$(oc -n ${NAMESPACE} auth can-i ${verb} ${base_resource} --subresource=${subresource} --as=${SERVICE_ACCOUNT} 2>&1)
+  else
+    result=$(oc -n ${NAMESPACE} auth can-i ${verb} ${base_resource} --as=${SERVICE_ACCOUNT} 2>&1)
+  fi
   
   if [[ ${result} == "yes" ]]; then
     if [[ ${expected} == "yes" ]]; then

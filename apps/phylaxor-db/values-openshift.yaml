@@ -1,4 +1,5 @@
 namespace: phylaxor-db
+namespaceCreate: false
 
 
 redis:

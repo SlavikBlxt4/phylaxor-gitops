@@ -18,11 +18,24 @@ echo "╚═══════════════════════�
 echo ""
 
 test_perm() {
-  result=$(oc -n ${NAMESPACE} auth can-i $2 $1 --as=${SERVICE_ACCOUNT} 2>&1)
-  if [[ ${result} == "yes" ]]; then
-    printf "${GREEN}✅${NC} Can $2 $1\n"
+  local resource="$1"
+  local verb="$2"
+  local base_resource="${resource}"
+  local subresource=""
+  if [[ "${resource}" == */* ]]; then
+    base_resource="${resource%%/*}"
+    subresource="${resource#*/}"
+  fi
+
+  if [[ -n "${subresource}" ]]; then
+    result=$(oc -n ${NAMESPACE} auth can-i ${verb} ${base_resource} --subresource=${subresource} --as=${SERVICE_ACCOUNT} 2>&1)
   else
-    printf "${RED}❌${NC} Cannot $2 $1\n"
+    result=$(oc -n ${NAMESPACE} auth can-i ${verb} ${base_resource} --as=${SERVICE_ACCOUNT} 2>&1)
+  fi
+  if [[ ${result} == "yes" ]]; then
+    printf "${GREEN}✅${NC} Can ${verb} ${resource}\n"
+  else
+    printf "${RED}❌${NC} Cannot ${verb} ${resource}\n"
   fi
 }
 
