@@ -1,10 +1,15 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
-metadata: { name: phylaxor-read-cluster }
+metadata:
+  name: phylaxor-read-cluster
+  labels:
+    app.kubernetes.io/name: phylaxor
+    app.kubernetes.io/component: enricher
 rules:
-- apiGroups: [""]
-  resources: ["nodes","namespaces"]
-  verbs: ["get","list","watch"]
-- apiGroups: ["storage.k8s.io"]
-  resources: ["storageclasses"]
-  verbs: ["get","list","watch"]
+  # Cluster-wide read-only access (no pod logs here - that's in namespace Role)
+  - apiGroups: [""]
+    resources: ["nodes", "namespaces"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]

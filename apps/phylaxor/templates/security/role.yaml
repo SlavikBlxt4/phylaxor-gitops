@@ -3,12 +3,18 @@ kind: Role
 metadata:
   name: phylaxor-enricher-role
   namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: phylaxor
+    app.kubernetes.io/component: enricher
+    logs-mode: {{ .Values.logs.mode | default .Values.logging.mode }}
 rules:
-- apiGroups: [""]
-  resources: ["pods","events"]
-  verbs: ["get","list","watch"]
-{{- if eq (.Values.logs.mode | default .Values.logging.mode) "podlogs" }}
-- apiGroups: [""]
-  resources: ["pods/log"]
-  verbs: ["get"]
-{{- end }}
+  # Base permissions: always allow pods & events queries
+  - apiGroups: [""]
+    resources: ["pods", "events"]
+    verbs: ["get", "list", "watch"]
+  # Conditional: pods/log access ONLY when logs.mode=podlogs
+  {{- if eq (.Values.logs.mode | default .Values.logging.mode) "podlogs" }}
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+  {{- end }}
