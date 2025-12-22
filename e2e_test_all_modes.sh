@@ -68,11 +68,11 @@ deploy_mode() {
   local mode="$1"
   log_section "DEPLOYING MODE: ${mode}"
   
-  log_info "Deploying phylaxor chart with logs.mode=${mode}..."
+  log_info "Deploying phylaxor chart with logging.mode=${mode}..."
   helm upgrade --install phylaxor ${CHART_PATH} \
     -f ${VALUES_FILE} \
     -n ${NAMESPACE} --create-namespace \
-    --set logs.mode=${mode} \
+    --set logging.mode=${mode} \
     --wait --timeout 3m 2>&1 | tail -20
   
   log_success "Chart deployed for mode: ${mode}"
@@ -294,7 +294,7 @@ main() {
   log_info "All microservice SAs deployed and verified:"
   oc -n ${NAMESPACE} get sa -o wide
   
-  log_info "Current deployment (logs.mode=podlogs):"
+  log_info "Current deployment (logging.mode=podlogs):"
   oc -n ${NAMESPACE} get deployment enricher -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="PHYLAXOR_LOGS_MODE")].value}'
   echo ""
   

@@ -94,7 +94,7 @@ echo "Command: helm upgrade --install phylaxor ${CHART_PATH} -f ${VALUES_FILE} -
 echo ""
 
 helm upgrade --install phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} \
-  --set logs.mode=none \
+  --set logging.mode=none \
   --wait --timeout 5m
 
 echo ""
@@ -173,7 +173,7 @@ test_permission "pods" "watch" "yes"
 test_permission "events" "get" "yes"
 test_permission "events" "list" "yes"
 test_permission "events" "watch" "yes"
-test_permission "pods/log" "get" "no"  # Should fail for logs.mode=none
+test_permission "pods/log" "get" "no"  # Should fail for logging.mode=none
 echo ""
 
 echo "CLUSTER-SCOPED PERMISSIONS:"
@@ -221,6 +221,6 @@ echo "  • Test permissions:          oc -n ${NAMESPACE} auth can-i list pods -
 echo "  • Describe pod:              oc -n ${NAMESPACE} describe pod -l app=enricher"
 echo ""
 echo "To test with different logging modes:"
-echo "  helm upgrade phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} --set logs.mode=podlogs"
-echo "  helm upgrade phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} --set logs.mode=loki"
+echo "  helm upgrade phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} --set logging.mode=podlogs"
+echo "  helm upgrade phylaxor ${CHART_PATH} -f ${VALUES_FILE} -n ${NAMESPACE} --set logging.mode=loki"
 echo ""

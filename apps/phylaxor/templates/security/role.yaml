@@ -6,14 +6,14 @@ metadata:
   labels:
     app.kubernetes.io/name: phylaxor
     app.kubernetes.io/component: enricher
-    logs-mode: {{ .Values.logs.mode | default .Values.logging.mode }}
+    logging-mode: {{ .Values.logging.mode }}
 rules:
   # Base permissions: always allow pods & events queries
   - apiGroups: [""]
     resources: ["pods", "events"]
     verbs: ["get", "list", "watch"]
-  # Conditional: pods/log access ONLY when logs.mode=podlogs
-  {{- if eq (.Values.logs.mode | default .Values.logging.mode) "podlogs" }}
+  # Conditional: pods/log access ONLY when logging.mode=podlogs
+  {{- if eq .Values.logging.mode "podlogs" }}
   - apiGroups: [""]
     resources: ["pods/log"]
     verbs: ["get"]

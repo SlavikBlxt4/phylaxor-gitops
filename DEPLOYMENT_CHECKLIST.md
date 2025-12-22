@@ -22,7 +22,7 @@
 ```bash
 cd ~/github/phylaxor-gitops
 git add -A
-git commit -m "feat: implement logs.mode feature with three logging modes (none/loki/podlogs) and conditional RBAC"
+git commit -m "feat: implement logging.mode feature with three logging modes (none/loki/podlogs) and conditional RBAC"
 git push
 ```
 

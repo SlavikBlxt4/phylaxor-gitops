@@ -22,16 +22,16 @@ spec:
         - name: REDIS_HOST
           value: "{{ .Values.serviceConnections.redis.host }}"
         - name: PHYLAXOR_LOGS_MODE
-          value: "{{ .Values.logs.mode | default .Values.logging.mode }}"
+          value: "{{ .Values.logging.mode }}"
         - name: PHYLAXOR_EVENTS_ENABLED
-          value: "{{ .Values.logs.eventsEnabled | default .Values.logging.eventsEnabled }}"
+          value: "{{ .Values.logging.eventsEnabled }}"
         - name: PHYLAXOR_LOGS_MAX_LINES
-          value: "{{ .Values.logs.maxLines | default .Values.logging.maxLines }}"
+          value: "{{ .Values.logging.maxLines }}"
         - name: PHYLAXOR_LOGS_MAX_BYTES
-          value: "{{ .Values.logs.maxBytes | default .Values.logging.maxBytes }}"
+          value: "{{ .Values.logging.maxBytes }}"
         - name: PHYLAXOR_LOGS_LOOKBACK
-          value: "{{ .Values.logs.lookbackSeconds | default .Values.logging.lookbackSeconds }}"
+          value: "{{ .Values.logging.lookbackSeconds }}"
         - name: PHYLAXOR_LOGS_TIMEOUT
-          value: "{{ .Values.logs.timeout | default .Values.logging.timeout }}"
+          value: "{{ .Values.logging.timeout }}"
         securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
         resources: {{- toYaml .Values.resources.enricher | nindent 10 }}
