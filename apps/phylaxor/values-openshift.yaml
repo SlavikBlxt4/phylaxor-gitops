@@ -4,19 +4,19 @@ manualAlertManagerConfig: false # OpenShift usa su propio AlertManager
 images:
   ingest:
     repository: ghcr.io/slavikblxt4/phylaxor-ingest
-    tag: "0.1.1" # ingest
+    tag: "r52-a963c10" # ingest
     pullPolicy: IfNotPresent
   enricher:
     repository: ghcr.io/slavikblxt4/phylaxor-enricher
-    tag: "r49-0a9abee" # enricher
+    tag: "r52-a963c10" # enricher
     pullPolicy: IfNotPresent
   decision:
     repository: ghcr.io/slavikblxt4/phylaxor-decision
-    tag: "r51-55e7de4" # decision
+    tag: "r52-a963c10" # decision
     pullPolicy: IfNotPresent
   notifier:
     repository: ghcr.io/slavikblxt4/phylaxor-notifier
-    tag: "r35-43d0e9e" # notifier
+    tag: "r52-a963c10" # notifier
     pullPolicy: IfNotPresent
   feedback:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback
@@ -24,7 +24,7 @@ images:
     pullPolicy: IfNotPresent
   feedback_gateway:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback_gateway
-    tag: "r45-d324806" # feedback_gateway
+    tag: "r52-a963c10" # feedback_gateway
     pullPolicy: IfNotPresent
 ingress:
   service: ingest
