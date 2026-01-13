@@ -50,7 +50,7 @@ securityContext:
   seccompProfile:
     type: RuntimeDefault
 logging:
-  mode: "none"
+  mode: "podlogs" # modes: none | loki | podlogs
   eventsEnabled: true
   maxLines: 500
   maxBytes: 100000
