@@ -78,7 +78,7 @@ bash quick_rbac_test.sh
 |-----------|-------------|---------|
 | get pods | ✅ Yes | `oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
 | list events | ✅ Yes | `oc -n phylaxor auth can-i list events --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
-| get pods/log | ❌ No | `oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
+| get pods/log | ❌ No | `oc -n phylaxor auth can-i get pods --subresource=log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
 | get nodes | ✅ Yes | `oc -n phylaxor auth can-i get nodes --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
 
 ### Logging Mode: "loki"
@@ -91,7 +91,7 @@ Same as "none" - pods/log permission NOT granted (logs from external Loki system
 |-----------|-------------|---------|
 | get pods | ✅ Yes | `oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
 | list events | ✅ Yes | `oc -n phylaxor auth can-i list events --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
-| get pods/log | ✅ **Yes** | `oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
+| get pods/log | ✅ **Yes** | `oc -n phylaxor auth can-i get pods --subresource=log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
 | get nodes | ✅ Yes | `oc -n phylaxor auth can-i get nodes --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa` |
 
 ---

@@ -9,7 +9,7 @@ oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-
 | `none` | No pod logs fetched | Minimal - no pods/log access | Default, lightweight, privacy-focused |
 | `loki` | Logs sent to external Loki/ELK | Minimal - no pods/log access | Centralized logging, external system stores logs |
 | `podlogs` | Direct K8s API pod log access | Explicit - pods/log permission required | Full context, requires cluster permissions |
-oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
+oc -n phylaxor auth can-i get pods --subresource=log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 ---
 
 ## RBAC Structure
@@ -87,7 +87,7 @@ oc -n phylaxor auth can-i get pods --as=system:serviceaccount:phylaxor:phylaxor-
 
 Test if enricher can read pod logs:
 ```bash
-oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
+oc -n phylaxor auth can-i get pods --subresource=log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: yes (only for logging.mode=podlogs)
 # Output: no (for logging.mode=none or loki)
 ```
@@ -117,7 +117,7 @@ helm upgrade phylaxor ./apps/phylaxor \
   --set logging.mode=none
 
 # Expected: No pods/log permission
-oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
+oc -n phylaxor auth can-i get pods --subresource=log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: no
 ```
 
@@ -141,7 +141,7 @@ helm upgrade phylaxor ./apps/phylaxor \
   --set logging.mode=loki
 
 # Expected: No pods/log permission (logs from Loki, not K8s API)
-oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
+oc -n phylaxor auth can-i get pods --subresource=log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: no
 ```
 
@@ -166,7 +166,7 @@ helm upgrade phylaxor ./apps/phylaxor \
   --set logging.mode=podlogs
 
 # Expected: pods/log permission GRANTED
-oc -n phylaxor auth can-i get pods/log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
+oc -n phylaxor auth can-i get pods --subresource=log --as=system:serviceaccount:phylaxor:phylaxor-enricher-sa
 # Output: yes
 ```
 

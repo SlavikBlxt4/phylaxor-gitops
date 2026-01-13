@@ -324,7 +324,7 @@ main() {
   log_info "To inspect further:"
   log_info "  - Enricher: oc -n ${NAMESPACE} logs deployment/enricher -f"
   log_info "  - Ingest: oc -n ${NAMESPACE} logs deployment/ingest -f"
-  log_info "  - RBAC check: oc -n ${NAMESPACE} auth can-i get pods/log --as=${ENRICHER_SA}"
+  log_info "  - RBAC check: oc -n ${NAMESPACE} auth can-i get pods --subresource=log --as=${ENRICHER_SA}"
 }
 
 main "$@"
