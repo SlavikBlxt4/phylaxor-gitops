@@ -4,7 +4,7 @@ manualAlertManagerConfig: false # OpenShift usa su propio AlertManager
 images:
   ingest:
     repository: ghcr.io/slavikblxt4/phylaxor-ingest
-    tag: "r52-a963c10" # ingest
+    tag: "r53-b6a1a36" # ingest
     pullPolicy: IfNotPresent
   enricher:
     repository: ghcr.io/slavikblxt4/phylaxor-enricher
