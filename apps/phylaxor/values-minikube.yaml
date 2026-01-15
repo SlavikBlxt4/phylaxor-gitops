@@ -12,7 +12,7 @@ images:
     pullPolicy: IfNotPresent
   decision:
     repository: ghcr.io/slavikblxt4/phylaxor-decision
-    tag: "r52-a963c10" # decision
+    tag: "r54-55ae41e" # decision
     pullPolicy: IfNotPresent
   notifier:
     repository: ghcr.io/slavikblxt4/phylaxor-notifier
