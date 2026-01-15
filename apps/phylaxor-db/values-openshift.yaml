@@ -5,6 +5,13 @@ namespaceCreate: false
 redis:
   enabled: true
   image: redis:7
+  args:
+    - "--save"
+    - ""
+    - "--stop-writes-on-bgsave-error"
+    - "no"
+  ports:
+    - containerPort: 6379
   storage:
     enabled: false
     size: 1Gi

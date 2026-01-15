@@ -13,7 +13,16 @@ spec:
       containers:
       - name: redis
         image: {{ .Values.redis.image }}
-        ports: [{ containerPort: 6379 }]
+        {{- with .Values.redis.args }}
+        args:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        ports:
+          {{- if .Values.redis.ports }}
+          {{- toYaml .Values.redis.ports | nindent 10 }}
+          {{- else }}
+          - containerPort: 6379
+          {{- end }}
         {{- if .Values.redis.storage.enabled }}
         volumeMounts:
         - name: data
