@@ -24,7 +24,7 @@ images:
     pullPolicy: IfNotPresent
   feedback_gateway:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback_gateway
-    tag: "r52-a963c10" # feedback_gateway
+    tag: "r57-610c254" # feedback_gateway
     pullPolicy: IfNotPresent
 ingress:
   service: ingest
