@@ -24,7 +24,7 @@ db:
 postgres:
   mountPath: /var/lib/pgsql/data
   enabled: true            # si quieres Postgres in-cluster para DEV
-  image: registry.redhat.io/rhel9/postgresql-16:latest
+  image: docker.io/library/postgres:16 #registry de redhat caido?¿
   storage:
     size: 10Gi
     storageClassName: crc-csi-hostpath-provisioner
