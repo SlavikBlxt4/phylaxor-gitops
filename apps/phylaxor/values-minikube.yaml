@@ -26,6 +26,8 @@ images:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback_gateway
     tag: "r57-610c254" # feedback_gateway
     pullPolicy: IfNotPresent
+  brain-gateway:
+    tag: r62-d8e42cc
 ingress:
   service: ingest
 imagePullSecrets:
