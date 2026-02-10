@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: brain-gateway
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: brain-gateway
+spec:
+  type: ClusterIP
+  selector:
+    app: brain-gateway
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
