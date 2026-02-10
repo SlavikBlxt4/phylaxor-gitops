@@ -4,27 +4,27 @@ manualAlertManagerConfig: true
 images:
   ingest:
     repository: ghcr.io/slavikblxt4/phylaxor-ingest
-    tag: "r53-b6a1a36" # ingest
+    tag: "r63-8deebff" # ingest
     pullPolicy: IfNotPresent
   enricher:
     repository: ghcr.io/slavikblxt4/phylaxor-enricher
-    tag: "r52-a963c10" # enricher
+    tag: "r63-8deebff" # enricher
     pullPolicy: IfNotPresent
   decision:
     repository: ghcr.io/slavikblxt4/phylaxor-decision
-    tag: "r61-0e97f19" # decision
+    tag: "r63-8deebff" # decision
     pullPolicy: IfNotPresent
   notifier:
     repository: ghcr.io/slavikblxt4/phylaxor-notifier
-    tag: "r58-d001515" # notifier
+    tag: "r63-8deebff" # notifier
     pullPolicy: IfNotPresent
   feedback:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback
-    tag: "r32-6bcd1b2" # feedback
+    tag: "r63-8deebff" # feedback
     pullPolicy: IfNotPresent
   feedback_gateway:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback_gateway
-    tag: "r57-610c254" # feedback_gateway
+    tag: "r63-8deebff" # feedback_gateway
     pullPolicy: IfNotPresent
   brain-gateway:
     tag: r62-d8e42cc
