@@ -28,10 +28,8 @@ images:
     pullPolicy: IfNotPresent
   brain_gateway:
     repository: ghcr.io/slavikblxt4/phylaxor-brain-gateway
-    tag: r62-d8e42cc # brain-gateway
+    tag: r62-d8e42cc # brain_gateway
     pullPolicy: IfNotPresent
-  brain-gateway:
-    tag: r64-dfa846d
 ingress:
   service: ingest
 imagePullSecrets:
