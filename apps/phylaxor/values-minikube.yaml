@@ -26,7 +26,7 @@ images:
     repository: ghcr.io/slavikblxt4/phylaxor-feedback_gateway
     tag: "r63-8deebff" # feedback_gateway
     pullPolicy: IfNotPresent
-  brain-gateway:
+  brain_gateway:
     repository: ghcr.io/slavikblxt4/phylaxor-brain-gateway
     tag: r62-d8e42cc # brain-gateway
     pullPolicy: IfNotPresent
@@ -41,14 +41,14 @@ replicas:
   enricher: 1
   decision: 1
   notifier: 1
-  brain-gateway: 1
+  brain_gateway: 1
 resources:
   ingest: {requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: 500m, memory: 256Mi}}
   enricher: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
   decision: {requests: {cpu: 150m, memory: 256Mi}, limits: {cpu: 500m, memory: 512Mi}}
   notifier: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
   feedback_gateway: {requests: {cpu: 20m, memory: 32Mi}, limits: {cpu: 100m, memory: 64Mi}}
-  brain-gateway: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
+  brain_gateway: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
 # CAMBIAR A SIGUIENTE CONFIGURACION CUANDO PASEMOS A PRODUCCION
 # securityContext:
 #   runAsNonRoot: true
