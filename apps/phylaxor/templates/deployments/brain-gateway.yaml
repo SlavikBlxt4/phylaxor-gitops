@@ -32,6 +32,8 @@ spec:
                   key: openai_api_key
             - name: CONTRACTS_DIR
               value: "/app/contracts"
+            - name: PHYLAXOR_BRAIN_DEBUG_RAW
+              value: {{ .Values.brainGateway.debugRaw | default false | quote }}
           volumeMounts:
             - name: contracts-volume
               mountPath: /app/contracts
