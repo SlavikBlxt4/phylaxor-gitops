@@ -34,6 +34,8 @@ spec:
               value: "/app/contracts"
             - name: PHYLAXOR_BRAIN_DEBUG_RAW
               value: {{ .Values.brainGateway.debugRaw | default false | quote }}
+            - name: PHYLAXOR_BRAIN_DEBUG_MOCK
+              value: {{ .Values.brainGateway.debugMock | default false | quote }}
           volumeMounts:
             - name: contracts-volume
               mountPath: /app/contracts

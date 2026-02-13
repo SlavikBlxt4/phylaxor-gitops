@@ -51,6 +51,7 @@ resources:
   brain_gateway: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
 brainGateway:
   debugRaw: false
+  debugMock: false
 # CAMBIAR A SIGUIENTE CONFIGURACION CUANDO PASEMOS A PRODUCCION
 # securityContext:
 #   runAsNonRoot: true
