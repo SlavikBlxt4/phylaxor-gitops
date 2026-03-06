@@ -28,7 +28,7 @@ images:
     pullPolicy: IfNotPresent
   brain_gateway:
     repository: ghcr.io/slavikblxt4/phylaxor-brain_gateway
-    tag: r73-88ad809 # brain_gateway
+    tag: r74-92e9a4e # brain_gateway
     pullPolicy: IfNotPresent
 ingress:
   service: ingest
