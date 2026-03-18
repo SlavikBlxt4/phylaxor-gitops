@@ -50,8 +50,8 @@ resources:
   feedback_gateway: {requests: {cpu: 20m, memory: 32Mi}, limits: {cpu: 100m, memory: 64Mi}}
   brain_gateway: {requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 128Mi}}
 brainGateway:
-  debugRaw: false
-  debugMock: true
+  debugRaw: true
+  debugMock: false
 securityContext:
   runAsNonRoot: true
   allowPrivilegeEscalation: false
