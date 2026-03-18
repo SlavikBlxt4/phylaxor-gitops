@@ -43,6 +43,7 @@ phylaxor-gitops/
   apps/phylaxor/          Main application chart
   apps/phylaxor-db/       Postgres and Redis chart
   docs/                   Deployment and RBAC documentation
+  e2e_brain_gateway.sh    Core AI path end-to-end validation
   deploy_and_test.sh      Deployment helper
   e2e_test_all_modes.sh   Logging-mode validation helper
   quick_rbac_test.sh      RBAC smoke test
@@ -71,6 +72,12 @@ Render manifests before applying changes:
 ```bash
 helm template phylaxor ./apps/phylaxor \
   -f apps/phylaxor/values-openshift.yaml > /tmp/phylaxor.yaml
+```
+
+Validate the core AI path:
+
+```bash
+./e2e_brain_gateway.sh
 ```
 
 ## Key Operational Ideas

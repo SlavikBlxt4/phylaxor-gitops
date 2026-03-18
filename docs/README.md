@@ -49,3 +49,4 @@ Core:
 
 Reference:
 - `VALUES_EXAMPLES.md`: example values for target environments
+- `E2E_BRAIN_GATEWAY.md`: repeatable validation of the core AI flow

@@ -32,6 +32,7 @@ What is already represented in GitOps:
 - `pods/log` is conditional in RBAC
 - Brain Gateway is deployed as a first-class service
 - OpenShift and Minikube values are maintained separately
+- the core AI path has been validated end to end
 
 What is not finished:
 - Loki-backed behavior is still future work
@@ -68,7 +69,7 @@ The most relevant deployment priorities now are:
 1. keep Brain Gateway deployment and configuration aligned with the app repo
 2. finish the Loki path when ready
 3. keep OpenShift-safe RBAC as the default reference
-4. reduce doc drift between app and GitOps repositories
+4. keep the validated E2E path easy to rerun
 
 ## Reading Order
 
