@@ -1,88 +1,61 @@
 # Configuration Contract — Phylaxor (GitOps)
 
-This document is **identical** to `phylaxor-project/docs/CONTRACT_ENV.md`. It is kept synchronized across both repositories.
+This is the Helm-facing quick reference for the application environment contract.
 
-See `phylaxor-project/docs/CONTRACT_ENV.md` for the full specification and rationale.
+The full contract lives in `../../phylaxor-project/docs/CONTRACT_ENV.md`.
 
-## Environment Variables (MVP) — Quick Reference
+## Enricher Logging Variables
 
-| Variable | Type | Default | Required | Use |
-|----------|------|---------|----------|-----|
-| `PHYLAXOR_LOGS_MODE` | enum | `none` | No | `none` \| `loki` \| `podlogs` |
-| `PHYLAXOR_EVENTS_ENABLED` | bool | `true` | No | Enable cluster event fetching |
-| `PHYLAXOR_LOGS_MAX_LINES` | int | `500` | No | Max log lines per pod |
-| `PHYLAXOR_LOGS_MAX_BYTES` | int | `100000` | No | Max log bytes per event (100 KB) |
-| `PHYLAXOR_LOGS_LOOKBACK` | int | `300` | No | Log lookback window (seconds) |
-| `PHYLAXOR_LOKI_ENABLED` | bool | `false` | No | Enable Loki backend (placeholder) |
-| `PHYLAXOR_LOKI_ENDPOINT` | string | — | If loki mode | Loki query API URL |
-| `PHYLAXOR_LOKI_TENANT_ID` | string | — | If loki mode | Loki tenant identifier |
-| `PHYLAXOR_LOKI_USERNAME` | string | — | If Loki basic auth | Username for Loki |
-| `PHYLAXOR_LOKI_PASSWORD` | string | — | If Loki basic auth | Password for Loki (from Secret) |
-| `PHYLAXOR_LOKI_BEARER_TOKEN` | string | — | If Loki bearer auth | Bearer token for Loki (from Secret) |
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `PHYLAXOR_LOGS_MODE` | `none` | `none`, `loki`, or `podlogs` |
+| `PHYLAXOR_EVENTS_ENABLED` | `true` | enable event enrichment |
+| `PHYLAXOR_LOGS_MAX_LINES` | `500` | max tailed log lines |
+| `PHYLAXOR_LOGS_MAX_BYTES` | `100000` | max log payload size |
+| `PHYLAXOR_LOGS_LOOKBACK` | `300` | log lookback window in seconds |
+| `PHYLAXOR_LOGS_TIMEOUT` | `5` | log fetch timeout in seconds |
 
-## Defaults (MVP)
+## Loki Variables
 
-| Variable | Default | Reason |
-|----------|---------|--------|
-| `PHYLAXOR_LOGS_MODE` | `none` | Safest; zero log exposure risk |
-| `PHYLAXOR_EVENTS_ENABLED` | `true` | Events are low-risk; valuable for context |
-| `PHYLAXOR_LOGS_MAX_LINES` | `500` | Balance between coverage and size |
-| `PHYLAXOR_LOGS_MAX_BYTES` | `100000` | ~100 KB per event; prevents bloat |
-| `PHYLAXOR_LOGS_LOOKBACK` | `300` | Most relevant logs within 5 min of alert |
-| `PHYLAXOR_LOKI_ENABLED` | `false` | Placeholder; not required for MVP |
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `PHYLAXOR_LOKI_ENABLED` | `false` | future Loki path toggle |
+| `PHYLAXOR_LOKI_ENDPOINT` | empty | Loki endpoint |
+| `PHYLAXOR_LOKI_TENANT_ID` | empty | Loki tenant |
+| `PHYLAXOR_LOKI_USERNAME` | empty | basic auth username |
+| `PHYLAXOR_LOKI_PASSWORD` | empty | basic auth password |
+| `PHYLAXOR_LOKI_BEARER_TOKEN` | empty | bearer token |
 
-## Helm Values Example
+## Brain Gateway Variables
 
-In `values.yaml` or `values-minikube.yaml`:
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `BRAIN_GATEWAY_URL` | app-defined | internal Brain Gateway base URL |
+| `BRAIN_GATEWAY_TIMEOUT_SECONDS` | `20` | request timeout |
+| `BRAIN_GATEWAY_MAX_RETRIES` | `2` | retry count for transient failures |
+| `BRAIN_GATEWAY_RETRY_BACKOFF_MS` | `250` | retry backoff |
+| `BRAIN_GATEWAY_MAX_OUTPUT_TOKENS` | `1024` | AI output budget |
+| `PHYLAXOR_BRAIN_DEBUG_RAW` | `false` | log raw model output |
+| `PHYLAXOR_BRAIN_DEBUG_MOCK` | `false` | return mock AI responses |
+
+## Helm Values Shape
+
+The chart currently exposes at least:
 
 ```yaml
-# Logging configuration
 logging:
-  mode: none  # none, loki, or podlogs
+  mode: none
   eventsEnabled: true
   maxLines: 500
   maxBytes: 100000
   lookbackSeconds: 300
+  timeout: 5
 
-# Loki integration (placeholder for future)
-loki:
-  enabled: false
-  endpoint: ""
-  tenantId: ""
-  auth:
-    type: none  # none, basicAuth, bearerToken
-    username: ""
-    password: ""  # From Secret
-    bearerToken: ""  # From Secret
+brainGateway:
+  debugRaw: false
+  debugMock: false
 ```
 
-## In Deployment/StatefulSet
+## Rule
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: phylaxor-enricher
-spec:
-  template:
-    spec:
-      containers:
-        - name: enricher
-          env:
-            - name: PHYLAXOR_LOGS_MODE
-              value: {{ .Values.logging.mode }}
-            - name: PHYLAXOR_EVENTS_ENABLED
-              value: {{ .Values.logging.eventsEnabled | quote }}
-            - name: PHYLAXOR_LOGS_MAX_LINES
-              value: {{ .Values.logging.maxLines | quote }}
-            - name: PHYLAXOR_LOGS_MAX_BYTES
-              value: {{ .Values.logging.maxBytes | quote }}
-            - name: PHYLAXOR_LOGS_LOOKBACK
-              value: {{ .Values.logging.lookbackSeconds | quote }}
-```
-
-## Full Specification
-
-For complete env var documentation, see **`phylaxor-project/docs/CONTRACT_ENV.md`**.
-
-This file serves as the Helm-focused reference. Both repositories use identical contract.
+When Helm starts exposing a new application env var, update this file and the app-repo contract together.

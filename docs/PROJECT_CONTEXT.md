@@ -1,118 +1,82 @@
 # Project Context — Phylaxor (GitOps)
 
-This is the **canonical global context** document for Phylaxor deployment (Helm, RBAC, Argo apps). This is identical to the application repo version; it is kept synchronized across both repositories.
+This is the deployment-oriented context document for the GitOps repository.
 
-## What is Phylaxor
+## Deployment Scope
 
-Phylaxor is a microservice-based **AI SRE Agent for Kubernetes / OpenShift** that automates incident response:
+This repo is responsible for:
+- Helm charts for application services
+- Helm charts for Postgres and Redis
+- values files for Minikube and OpenShift
+- per-service ServiceAccounts
+- conditional RBAC for enricher log access
+- Brain Gateway deployment resources
 
-1. **Consumes** alerts from Alertmanager (webhook)
-2. **Enriches** with cluster context (pods, events, logs, metrics)
-3. **Applies** knowledge-base rules and historical decisions
-4. **Notifies** on-call engineers (Telegram) with actionable troubleshooting steps
-5. **Collects** feedback (thumbs up/down) to improve recommendations
+## Runtime Model
 
-**Goal**: Reduce MTTR (Mean Time To Resolution) by providing context-aware, repeatable incident responses.
+The deployed system includes:
+- ingest
+- enricher
+- decision
+- brain-gateway
+- notifier
+- feedback-gateway
+- feedback UI
+- Redis
+- Postgres
 
-## Target Environments
+## Current State
 
-- **Kubernetes vanilla** (dev/labs): Minikube
-- **OpenShift enterprise** (dev/labs): CRC (CodeReady Containers)
+What is already represented in GitOps:
+- logging modes are exposed through values
+- `pods/log` is conditional in RBAC
+- Brain Gateway is deployed as a first-class service
+- OpenShift and Minikube values are maintained separately
 
-Primary focus: **enterprise-ready behavior for OpenShift** (strict RBAC, security-first, defensible design).
+What is not finished:
+- Loki-backed behavior is still future work
+- some docs still lag behind implementation details and are being normalized
+- additional hardening like network isolation is still optional
 
-## High-Level Architecture
+## Security Model Summary
 
-See application repo `ARCHITECTURE.md` for detailed flow and ASCII diagrams.
+The deployment layer must preserve these rules:
 
-**Simplified flow**:
+1. notifier has no Kubernetes permissions
+2. enricher gets the minimum read-only cluster access needed
+3. direct pod log access is granted only for `logging.mode=podlogs`
+4. Secret access is not broadened casually
+5. OpenShift remains the strict environment for validating RBAC assumptions
+
+## Topology Summary
+
+```text
+Alertmanager -> ingest -> Redis -> enricher -> Redis -> decision
+decision -> Postgres
+decision -> Brain Gateway
+decision -> notifier
+Telegram -> feedback-gateway -> Postgres
+feedback UI -> Postgres
 ```
-Alertmanager → ingest → Redis → enricher → Redis → decision → notifier (Telegram)
-                                                      ↓
-                                                  Postgres (decisions, KB, feedback)
-```
 
-## Microservices Overview
+See `DEPLOYMENT_TOPOLOGY.md` for the cluster layout.
 
-| Service | Role | RBAC | Permissions |
-|---------|------|------|-------------|
-| **ingest** | HTTP webhook endpoint | No | None (internal only) |
-| **enricher** | Cluster context + logs | Yes | Observer + conditional pods/log |
-| **decision** | KB matching + history | No | Postgres read-only |
-| **notifier** | Telegram notification | No | No kube perms (critical!) |
-| **feedback-gateway** | Telegram callbacks | No | Postgres write (feedback only) |
-| **feedback** | Dashboard UI | No | Postgres read-only |
-| **postgres** | Database (KB, history, feedback) | Yes | Storage, init script |
-| **redis** | Event queue | No | Internal only |
+## Operational Priorities
 
-See `docs/RBAC_MODEL.md` for detailed RBAC specification and Helm implementation.
+The most relevant deployment priorities now are:
 
-## Current System State
+1. keep Brain Gateway deployment and configuration aligned with the app repo
+2. finish the Loki path when ready
+3. keep OpenShift-safe RBAC as the default reference
+4. reduce doc drift between app and GitOps repositories
 
-### Working Components
-- ✅ Feedback gateway: Telegram callback buttons → Postgres
-- ✅ Decision engine: KB matching + historical lookup
-- ✅ Enricher: cluster context + pod status + events
-- ✅ Ingest: alert normalization → Redis
-- ✅ Notifier: Telegram integration
+## Reading Order
 
-### Known Issue
-**OpenShift RBAC limitation**: Reading pod logs via Kubernetes API (`pods/log`) fails with 403 unless explicitly granted via ClusterRole.
+Read these in order:
 
-This drives the **logging modes** strategy (see `docs/CONTRACT_ENV.md`).
-
-## Security Posture
-
-### Non-Negotiables
-1. **No Secrets by default** — Do not grant Secret read permission
-2. **Explicit opt-in for log access** — Logs may contain sensitive data
-3. **Graceful degradation** — RBAC 403 errors do NOT break the pipeline
-4. **Separation of duties** — Notifier has NO kube/log permissions
-5. **Minimum RBAC principle** — Only grant what is strictly needed
-
-### OpenShift vs Minikube
-- **OpenShift CRC**: Strict RBAC enforcement (security testing ground)
-- **Minikube**: Permissive by default (fast iteration)
-
-## Configuration Contract (MVP)
-
-Environment variables control behavior (see `docs/CONTRACT_ENV.md`):
-
-- `PHYLAXOR_LOGS_MODE` — `none` | `loki` | `podlogs` (default: `none`)
-- `PHYLAXOR_EVENTS_ENABLED` — `true` | `false` (default: `true`)
-- `PHYLAXOR_LOGS_MAX_LINES`, `PHYLAXOR_LOGS_MAX_BYTES`, `PHYLAXOR_LOGS_LOOKBACK`
-- Loki settings (endpoint, tenant, auth) — placeholder for future
-
-**Why env vars first?** Simple, testable, and avoid CRDs/operators for now.
-
-## Logging Modes Explained
-
-See `docs/LOGGING_MODES.md` for deep dive.
-
-| Mode | Source | Risk | Use Case |
-|------|--------|------|----------|
-| `none` | Events + resource status only | None (no logs read) | Default, safest |
-| `loki` | Centralized logging backend | Low (enterprise-recommended) | OpenShift Logging / LokiStack |
-| `podlogs` | Kubernetes API `pods/log` | High (logs can leak secrets) | Manual fallback if Loki unavailable |
-
-## Immediate Next Steps
-
-1. ✅ Define the env var contract (this doc + `CONTRACT_ENV.md`)
-2. ⏳ Update Helm templates to expose logging mode config
-3. ⏳ Implement RBAC conditionally (grant `pods/log` only if mode=podlogs)
-4. ⏳ Test on CRC with OpenShift RBAC enforcement
-5. ⏳ Implement Loki provider (future)
-
-## Key Constraints
-
-- Project is **Deployments + StatefulSets** (not CRDs/operators yet)
-- RBAC templates must be **conditional** (grant permissions based on Helm values)
-- Goal: Reach an **MVP that is launchable** without security concerns
-
-## References
-
-- **`phylaxor-project/ARCHITECTURE.md`** — Component details
-- **`phylaxor-project/docs/CONTRACT_ENV.md`** — Env var specification
-- **`docs/RBAC_MODEL.md`** — Helm implementation of conditional RBAC
-- **`docs/VALUES_EXAMPLES.md`** — Example values for Minikube/CRC
-- **`docs/DEPLOYMENT_TOPOLOGY.md`** — Namespace layout and serviceaccounts
+1. `README.md`
+2. `docs/README.md`
+3. `docs/PROJECT_CONTEXT.md`
+4. `docs/DEPLOYMENT_TOPOLOGY.md`
+5. `docs/CONTRACT_ENV.md`
+6. `docs/RBAC_MODEL.md`
