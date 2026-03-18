@@ -98,3 +98,6 @@ serviceConnections:
   postgres:
     host: "postgres.phylaxor-db.svc.cluster.local"
     port: 5432
+  brainGateway:
+    host: "brain-gateway.phylaxor.svc.cluster.local"
+    port: 8000

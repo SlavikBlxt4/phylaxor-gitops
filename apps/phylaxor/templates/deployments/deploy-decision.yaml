@@ -30,6 +30,8 @@ spec:
               key:  {{ .Values.db.dsnKey }}
         - name: NOTIFIER_URL
           value: "http://notifier.{{ .Values.namespace }}.svc.cluster.local:8082/send"
+        - name: BRAIN_GATEWAY_URL
+          value: "http://{{ .Values.serviceConnections.brainGateway.host }}:{{ .Values.serviceConnections.brainGateway.port }}"
       volumes:
         - name: rules
           configMap:
