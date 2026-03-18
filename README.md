@@ -44,6 +44,7 @@ phylaxor-gitops/
   apps/phylaxor-db/       Postgres and Redis chart
   docs/                   Deployment and RBAC documentation
   e2e_brain_gateway.sh    Core AI path end-to-end validation
+  e2e_alertmanager_openshift.sh
   deploy_and_test.sh      Deployment helper
   e2e_test_all_modes.sh   Logging-mode validation helper
   quick_rbac_test.sh      RBAC smoke test
@@ -78,6 +79,12 @@ Validate the core AI path:
 
 ```bash
 ./e2e_brain_gateway.sh
+```
+
+Validate real alert delivery through OpenShift Alertmanager:
+
+```bash
+./e2e_alertmanager_openshift.sh
 ```
 
 ## Key Operational Ideas

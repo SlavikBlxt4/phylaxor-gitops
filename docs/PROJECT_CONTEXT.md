@@ -33,6 +33,7 @@ What is already represented in GitOps:
 - Brain Gateway is deployed as a first-class service
 - OpenShift and Minikube values are maintained separately
 - the core AI path has been validated end to end
+- real alert delivery via OpenShift Alertmanager has been validated in CRC
 
 What is not finished:
 - Loki-backed behavior is still future work

@@ -50,3 +50,4 @@ Core:
 Reference:
 - `VALUES_EXAMPLES.md`: example values for target environments
 - `E2E_BRAIN_GATEWAY.md`: repeatable validation of the core AI flow
+- `E2E_ALERTMANAGER_OPENSHIFT.md`: repeatable validation of real alert delivery in OpenShift
