@@ -22,19 +22,21 @@ The matcher remains stable. The runner adds a unique `phylaxor_run_id` label to 
 
 - CRC/OpenShift is running and `oc` is logged in.
 - `openshift-user-workload-monitoring` is enabled.
-- User-workload Prometheus exposes `kube_pod_status_phase` for the selected Phylaxor pod.
+- Thanos Querier exposes `kube_pod_status_phase` for the selected Phylaxor pod.
 - Application deployments run in `phylaxor`; Postgres runs in `phylaxor-db`.
 - Brain Gateway uses a real OpenAI key and `debugMock=false`.
 - Notifier has valid Telegram credentials; dry-run does not satisfy this E2E.
-- `python3` is available locally for PromQL URL encoding and JSON validation.
+- `curl` and `python3` are available locally for the authenticated Thanos query and JSON validation.
 
-The Prometheus service proxy defaults to:
+The runner discovers the supported Thanos Querier route with:
 
-```text
-/api/v1/namespaces/openshift-user-workload-monitoring/services/prometheus-user-workload:9091/proxy
+```bash
+oc -n openshift-monitoring get route thanos-querier
 ```
 
-Override `PROMETHEUS_PROXY_PATH` if the cluster exposes a different service port/path.
+It authenticates using `oc whoami -t` and never prints the bearer token. Set
+`THANOS_QUERIER_URL=https://host.example` only when route auto-discovery is not
+appropriate.
 
 ## Resource-Backed Fixture
 
@@ -48,7 +50,11 @@ The runner chooses one Ready enricher pod and renders:
 - `__TARGET_POD__`
 - `__RUN_ID__`
 
-The PromQL query targets exactly that real running pod. It does not crash or restart a workload. Before applying the rule, the runner queries user-workload Prometheus and requires exactly one series with the expected namespace and pod labels.
+The PromQL query targets exactly that real running pod. It does not crash or restart a workload. Before applying the rule, the runner queries Thanos Querier and requires exactly one series with the expected namespace and pod labels.
+
+The template deliberately omits the `leaf-prometheus` evaluation-scope label.
+OpenShift therefore evaluates the user-defined rule in Thanos Ruler, where the
+platform `kube-state-metrics` series is available.
 
 ## Run
 
@@ -62,7 +68,7 @@ Useful overrides:
 ```bash
 RUN_ID=phylaxor-manual-001 KEEP_RULE=true ./e2e_alertmanager_openshift.sh
 TARGET_POD=enricher-abc123 ./e2e_alertmanager_openshift.sh
-PROMETHEUS_PROXY_PATH=/api/v1/... ./e2e_alertmanager_openshift.sh
+THANOS_QUERIER_URL=https://thanos-querier.example ./e2e_alertmanager_openshift.sh
 ```
 
 `RUN_ID` must match `^[a-z0-9][a-z0-9-]{0,62}$`.

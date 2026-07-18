@@ -9,7 +9,7 @@ TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-180}"
 POLL_SECONDS="${POLL_SECONDS:-10}"
 ALERTNAME="${ALERTNAME:-PhylaxorRealPipelineTest}"
 KEEP_RULE="${KEEP_RULE:-false}"
-PROMETHEUS_PROXY_PATH="${PROMETHEUS_PROXY_PATH:-/api/v1/namespaces/openshift-user-workload-monitoring/services/prometheus-user-workload:9091/proxy}"
+THANOS_QUERIER_URL="${THANOS_QUERIER_URL:-}"
 RUN_ID="${RUN_ID:-phylaxor-$(date -u +%Y%m%d%H%M%S)-${RANDOM}}"
 RUN_STARTED_AT=""
 BASE_ALERT_ID="0"
@@ -126,6 +126,7 @@ trap cleanup EXIT
 
 verify_prerequisites() {
   require_cmd oc
+  require_cmd curl
   require_cmd python3
   validate_run_id
   validate_runtime_inputs
@@ -146,6 +147,19 @@ verify_prerequisites() {
   fi
   if ! oc get ns openshift-user-workload-monitoring >/dev/null 2>&1; then
     log_error "openshift-user-workload-monitoring namespace not found"
+    exit 1
+  fi
+  if [[ -z "${THANOS_QUERIER_URL}" ]]; then
+    local thanos_host
+    thanos_host="$(oc -n openshift-monitoring get route thanos-querier -o jsonpath='{.status.ingress[0].host}')"
+    if [[ -z "${thanos_host}" ]]; then
+      log_error "Thanos Querier route has no admitted host"
+      exit 1
+    fi
+    THANOS_QUERIER_URL="https://${thanos_host}"
+  fi
+  if [[ ! "${THANOS_QUERIER_URL}" =~ ^https://[A-Za-z0-9.-]+(:[0-9]+)?$ ]]; then
+    log_error "THANOS_QUERIER_URL must be an HTTPS origin without a path"
     exit 1
   fi
   cat <<EOF
@@ -175,10 +189,18 @@ select_target_pod() {
 }
 
 verify_metric_series() {
-  local promql encoded response
+  local promql response token
   promql="kube_pod_status_phase{namespace=\"${APP_NAMESPACE}\",pod=\"${TARGET_POD}\",phase=\"Running\"} == 1"
-  encoded="$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "${promql}")"
-  response="$(oc get --raw "${PROMETHEUS_PROXY_PATH}/api/v1/query?query=${encoded}")"
+  token="$(oc whoami -t)"
+  if [[ -z "${token}" ]]; then
+    log_error "oc did not return a bearer token for the Thanos query"
+    exit 1
+  fi
+  response="$(curl --fail --silent --show-error --insecure \
+    -H "Authorization: Bearer ${token}" \
+    --get "${THANOS_QUERIER_URL}/api/v1/query" \
+    --data-urlencode "query=${promql}")"
+  unset token
   python3 -c '
 import json, sys
 namespace, pod = sys.argv[1:3]
@@ -188,7 +210,7 @@ matching = [r for r in results if r.get("metric", {}).get("namespace") == namesp
 if payload.get("status") != "success" or len(results) != 1 or len(matching) != 1:
     raise SystemExit(f"expected exactly one matching metric series, got total={len(results)} matching={len(matching)}")
 ' "${APP_NAMESPACE}" "${TARGET_POD}" <<<"${response}"
-  log_success "User-workload Prometheus returned exactly one target series"
+  log_success "Thanos Querier returned exactly one target series"
 }
 
 capture_baseline() {
@@ -290,6 +312,7 @@ verify_result() {
     WHERE request_id='${ai_request_id}' AND alert_id=${alert_id} AND decision_id=${decision_id}
       AND provider IS NOT NULL AND model IS NOT NULL
       AND input_tokens IS NOT NULL AND output_tokens IS NOT NULL
+      AND latency_ms IS NOT NULL
     ORDER BY id DESC LIMIT 1;
   " | tr -d '\r\n')"
   if [[ -z "${usage_row}" ]]; then
